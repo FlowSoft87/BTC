@@ -4,9 +4,9 @@
 #include "BTC.h"
 
 int main() {
-    BTC::BTagCompound test;
 
     // Store values to disk
+    BTC::BTagCompound test;
     test.setValue<uint32_t>("integer",1);
     test.setValue<float>("float",1.4f);
     test.setValue<double>("double",1.3452e-10);
@@ -20,21 +20,22 @@ int main() {
     tag->putArray<double>("doubarr",doubarr,20);
     tag->setValue<uint16_t>("bla",20);
     std::cout << test << std::endl;
-    std::fstream file("./temp.dat",std::fstream::out);
-    test.serialize(file);
-    file.close();
+    std::fstream file_out("./temp.dat",std::fstream::out);
+    test.serialize(file_out);
+    file_out.close();
 
     // Load values
-    std::fstream file("./temp.dat",std::fstream::in);
-    test.deserialize(file);
-    file.close();
-    std::cout << test << std::endl;
-    std::cout << test.getValue<double>("double") << std::endl;
-    BTC::BTagCompoundPtr tag = test.getTag<BTC::BTagCompound>("othertag");
-    std::cout << *tag << std::endl;
-    std::cout << tag->getValue<uint16_t>("bla") << std::endl;
+    BTC::BTagCompound test1;
+    std::fstream file_in("./temp.dat",std::fstream::in);
+    test1.deserialize(file_in);
+    file_in.close();
+    std::cout << test1 << std::endl;
+    std::cout << test1.getValue<double>("double") << std::endl;
+    BTC::BTagCompoundPtr tag1 = test1.getTag<BTC::BTagCompound>("othertag");
+    std::cout << *tag1 << std::endl;
+    std::cout << tag1->getValue<uint16_t>("bla") << std::endl;
     size_t len;
-    double* doubarr = tag->getArray<double>("doubarr",len);
+    doubarr = tag1->getArray<double>("doubarr",len);
     for (int i=0; i<len; ++i) std::cout << doubarr[i] << ' ';
     std::cout << std::endl;
 
