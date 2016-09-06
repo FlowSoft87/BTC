@@ -40,6 +40,12 @@ class SharedObjPtr {
     }
 #endif
 
+    SharedObjPtr(T* d) : data(0) {
+        data = new ObjPtrData<T>();
+        data->data = d;
+        ++(data->counter);
+    }
+
     ~SharedObjPtr() {
         --(data->counter);
         if (data->counter == 0) {
@@ -48,8 +54,8 @@ class SharedObjPtr {
     }
 
     static SharedObjPtr<T> fromObject(T* d) {
-        SharedObjPtr ptr;
-        (ptr.data)->data = d;
+        SharedObjPtr ptr(d);
+        //(ptr.data)->data = d;
         //++((ptr.data)->counter);
         return ptr;
     }

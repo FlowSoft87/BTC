@@ -2,6 +2,11 @@
 #define BTC_BTC_H_
 
 #include "BTagCompound.h"
-#include "definition.h"
+
+namespace BTC {
+
+typedef ptr_::SharedObjPtr<BTagCompound> BTagCompoundPtr;
+
+}
 
 #endif
