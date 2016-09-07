@@ -24,22 +24,22 @@ class BTagCompound;
     DOUBLE_ARR = 70
 };*/
 
-template<typename T> struct DataType { static const uint8_t value = 255; };
-template<> struct DataType<BTagCompound> { static const uint8_t value = 0; };
-template<> struct DataType<std::string> { static const uint8_t value = 1; };
-template<> struct DataType<uint8_t> { static const uint8_t value = 2; };
-template<> struct DataType<uint16_t> { static const uint8_t value = 3; };
-template<> struct DataType<uint32_t> { static const uint8_t value = 4; };
-template<> struct DataType<uint64_t> { static const uint8_t value = 5; };
-template<> struct DataType<float> { static const uint8_t value = 6; };
-template<> struct DataType<double> { static const uint8_t value = 7; };
-template<> struct DataType<std::string*> { static const uint8_t value = 64; };
-template<> struct DataType<uint8_t*> { static const uint8_t value = 65; };
-template<> struct DataType<uint16_t*> { static const uint8_t value = 66; };
-template<> struct DataType<uint32_t*> { static const uint8_t value = 67; };
-template<> struct DataType<uint64_t*> { static const uint8_t value = 68; };
-template<> struct DataType<float*> { static const uint8_t value = 69; };
-template<> struct DataType<double*> { static const uint8_t value = 70; };
+template<typename T> struct DataType { static const unsigned char value = 255; };
+template<> struct DataType<BTagCompound> { static const unsigned char value = 0; };
+template<> struct DataType<std::string> { static const unsigned char value = 1; };
+template<> struct DataType<uint8_t> { static const unsigned char value = 2; };
+template<> struct DataType<uint16_t> { static const unsigned char value = 3; };
+template<> struct DataType<uint32_t> { static const unsigned char value = 4; };
+template<> struct DataType<uint64_t> { static const unsigned char value = 5; };
+template<> struct DataType<float> { static const unsigned char value = 6; };
+template<> struct DataType<double> { static const unsigned char value = 7; };
+template<> struct DataType<std::string*> { static const unsigned char value = 64; };
+template<> struct DataType<uint8_t*> { static const unsigned char value = 65; };
+template<> struct DataType<uint16_t*> { static const unsigned char value = 66; };
+template<> struct DataType<uint32_t*> { static const unsigned char value = 67; };
+template<> struct DataType<uint64_t*> { static const unsigned char value = 68; };
+template<> struct DataType<float*> { static const unsigned char value = 69; };
+template<> struct DataType<double*> { static const unsigned char value = 70; };
 
 }
 

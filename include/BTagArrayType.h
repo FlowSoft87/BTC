@@ -46,7 +46,7 @@ class BTagArrayType : public IBTagBase {
         }
     }
 
-    uint8_t getTypeID() const {
+    unsigned char getTypeID() const {
         return DataType<T*>::value;
     }
 

@@ -339,7 +339,7 @@ public:
         datalist.clear();
     }
 
-    uint8_t getTypeID() const {
+    unsigned char getTypeID() const {
         return DataType<BTagCompound>::value;
     }
 
@@ -355,7 +355,7 @@ public:
 
     void deserialize(std::istream& is) {
         size_t data_size = SerializeHelper::deserializeIntVar<uint64_t>(is);
-        uint8_t type_temp;
+        unsigned char type_temp;
         for(size_t i=0; i<data_size; ++i) {
             datalist.add(BTagCompoundDataEntry());
             // tag
@@ -449,7 +449,7 @@ public:
         }
         for (size_t i=0, len=datalist.size(); i<len; ++i) {
             os << '\n';
-            for (uint16_t i=0; i<(increment+1)*2; ++i) {
+            for (uint16_t j=0; j<(increment+1)*2; ++j) {
                 os << ' ';
             }
             os << '(' << i << ",\'" << datalist[i].tag << "\'):";

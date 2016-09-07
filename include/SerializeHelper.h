@@ -132,8 +132,8 @@ public:
 template<typename T>
 void SerializeHelper::serializeIntVar(std::ostream& o, T i)
 {
-    static_assert(std::is_integral<T>::value,"Error (serialize_::SerializeHelper::serializeIntVar): Not an integral type!");
-    static_assert(std::is_unsigned<T>::value,"Error (serialize_::SerializeHelper::serializeIntVar): Integral type not unsigned!");
+//    static_assert(std::is_integral<T>::value,"Error (serialize_::SerializeHelper::serializeIntVar): Not an integral type!");
+//    static_assert(std::is_unsigned<T>::value,"Error (serialize_::SerializeHelper::serializeIntVar): Integral type not unsigned!");
     if(i <= std::numeric_limits<uint8_t>::max())
     {
         serializeByte(o,0);

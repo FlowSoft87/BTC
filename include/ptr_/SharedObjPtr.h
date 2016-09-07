@@ -34,12 +34,6 @@ class SharedObjPtr {
         ++(data->counter);
     }
 
-#ifdef ASSERT_C11
-    SharedObjPtr(SharedObjPtr<T>&& ptr) : data(ptr.data) {
-        ++(data->counter);
-    }
-#endif
-
     SharedObjPtr(T* d) : data(0) {
         data = new ObjPtrData<T>();
         data->data = d;
@@ -55,13 +49,11 @@ class SharedObjPtr {
 
     static SharedObjPtr<T> fromObject(T* d) {
         SharedObjPtr ptr(d);
-        //(ptr.data)->data = d;
-        //++((ptr.data)->counter);
         return ptr;
     }
 
     template<typename U>
-    static SharedObjPtr<T> reinterpretCast(SharedObjPtr<U>& ptr) {
+    static SharedObjPtr<T> reinterpretCast(const SharedObjPtr<U>& ptr) {
         SharedObjPtr<T> new_ptr;
         delete new_ptr.data;
         new_ptr.data = reinterpret_cast<ObjPtrData<T>*>(ptr.data);
@@ -78,30 +70,11 @@ class SharedObjPtr {
         ++(data->counter);
     }
 
-#ifdef ASSERT_C11
-    SharedObjPtr<T>& operator=(SharedObjPtr<T>&& ptr) {
-        --(data->counter);
-        if (data->counter == 0) {
-            delete data;
-        }
-        data = ptr.data;
-        ++(data->counter);
-    }
-#endif
-
-    T& operator*() {
+    T& operator*() const {
         return *(data->data);
     }
 
-    const T& operator*() const {
-        return *(data->data);
-    }
-
-    T* operator->() {
-        return data->data;
-    }
-
-    const T* operator->() const {
+    T* operator->() const {
         return data->data;
     }
 

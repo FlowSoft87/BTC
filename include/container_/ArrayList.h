@@ -6,6 +6,7 @@
 
 #include "container_/algorithm.h"
 
+namespace BTC {
 namespace container_ {
 
 // Wrapper of the std::vector class.
@@ -15,6 +16,9 @@ class ArrayList {
     std::vector<T> data;
 
 public:
+    typedef typename std::vector<T>::iterator iterator_type;
+    typedef typename std::vector<T>::const_iterator const_iterator_type;
+
     ArrayList();
     ArrayList(const ArrayList<T>& al);
 #ifdef ASSERT_C11
@@ -257,13 +261,13 @@ typename std::vector<T>::iterator ArrayList<T>::end()
 template<class T>
 typename std::vector<T>::const_iterator ArrayList<T>::begin() const
 {
-    return(data.cbegin());
+    return(data.begin());
 }
 
 template<class T>
 typename std::vector<T>::const_iterator ArrayList<T>::end() const
 {
-    return(data.cend());
+    return(data.end());
 }
 
 template<class T>
@@ -291,6 +295,6 @@ std::ostream& operator<<(std::ostream& os, const ArrayList<T>& a)
     return os;
 }
 
-}
+}}
 
 #endif

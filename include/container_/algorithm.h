@@ -7,6 +7,7 @@
 * Collection of general purpose operations to be performed on containers.
 **/
 
+namespace BTC {
 namespace container_ {
 
 /**
@@ -23,6 +24,7 @@ void copy(const Container1& c1, Container2& c2, size_t pos0, size_t pos1) {
     std::copy(c1.begin()+pos0,c1.begin()+pos1,c2.begin());
 }
 
+#ifdef ASSERT_C11
 /**
 * Move elements from one container to the other.
 * Iterator: F
@@ -31,6 +33,7 @@ template<class Container1, class Container2>
 void move(const Container1& c1, Container2& c2) {
     std::move(c1.begin(),c1.end(),c2.begin());
 }
+#endif
 
 /**
 * Binary sort, order is not necessarily mantained.
@@ -70,7 +73,7 @@ void sort(Container& c, const Compare& comp) {
 template<typename Container, typename T>
 size_t search_lower(const Container& c, 
                     const T& val) {
-    auto iter = std::lower_bound(c.begin(),c.end(),val);
+    typename Container::const_iterator_type iter = std::lower_bound(c.begin(),c.end(),val);
     return(iter-c.begin());
 }
 
@@ -78,10 +81,10 @@ template<typename Container, typename T, typename Compare>
 size_t search_lower(const Container& c, 
                     const T& val, 
                     const Compare& comp) {
-    auto iter = std::lower_bound(c.begin(),c.end(),val,comp);
+    typename Container::const_iterator_type iter = std::lower_bound(c.begin(),c.end(),val,comp);
     return(iter-c.begin());
 }
 
-}
+}}
 
 #endif

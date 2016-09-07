@@ -15,7 +15,7 @@ class BTagValueType : public IBTagBase {
     BTagValueType() : data() {}
     BTagValueType(const T& value) : data(value) {}
 
-    uint8_t getTypeID() const {
+    unsigned char getTypeID() const {
         return DataType<T>::value;
     }
 

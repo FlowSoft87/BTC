@@ -14,7 +14,7 @@ class IBTagBase {
   public:
     virtual ~IBTagBase() {}
     // Returns the type information.
-    virtual uint8_t getTypeID() const = 0;
+    virtual unsigned char getTypeID() const = 0;
     // Serialize the BTag to stream.
     virtual void serialize(std::ostream& os) const = 0;
     // Deserialize the BTag from stream.
