@@ -1,14 +1,15 @@
-#ifndef BTC_BTAGCOMPOUNDENTRY_H
-#define BTC_BTAGCOMPOUNDENTRY_H
+#ifndef BTC_SERIALIZE_BTAGCOMPOUNDENTRY_H
+#define BTC_SERIALIZE_BTAGCOMPOUNDENTRY_H
 
 #include <string>
 
 namespace BTC {
+namespace serialize_ {
 
 class BTagCompoundEntry
 {
 public:
-    std::string tag;
+    STRING_T tag;
     size_t position;
 
     bool operator<(const BTagCompoundEntry& entry) const {
@@ -16,6 +17,6 @@ public:
     }
 };
 
-}
+}}
 
 #endif

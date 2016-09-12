@@ -2,20 +2,21 @@
 #define BTC_BTAGCOMPOUNDDATAENTRY_H_
 
 namespace BTC {
+namespace serialize_ {
 
 struct BTagCompoundDataEntry {
-    std::string tag;
+    STRING_T tag;
     ptr_::SharedObjPtr<IBTagBase> data;
 
     BTagCompoundDataEntry()
             : tag(), data() {
     }
 
-    BTagCompoundDataEntry(const std::string& t, ptr_::SharedObjPtr<IBTagBase> d)
+    BTagCompoundDataEntry(const STRING_T& t, ptr_::SharedObjPtr<IBTagBase> d)
             : tag(t), data(d) {
     }
 };
 
-}
+}}
 
 #endif

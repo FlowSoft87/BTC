@@ -1,12 +1,13 @@
-#ifndef BTC_BTAGBASE_H
-#define BTC_BTAGBASE_H
+#ifndef BTC_SERIALIZE_BTAGBASE_H
+#define BTC_SERIALIZE_BTAGBASE_H
 
 #include <string>
 
 #include "DataType.h"
-#include "SerializeHelper.h"
+#include "function.h"
 
 namespace BTC {
+namespace serialize_ {
 
 // Interface for BTag objects.
 class IBTagBase {
@@ -20,9 +21,9 @@ class IBTagBase {
     // Deserialize the BTag from stream.
     virtual void deserialize(std::istream& is) = 0;
     // Human readable print of the BTag
-    virtual std::ostream& print(std::ostream& os, uint16_t increment) const = 0;
+    virtual std::ostream& print(std::ostream& os, unsigned char increment) const = 0;
 };
 
-}
+}}
 
 #endif
