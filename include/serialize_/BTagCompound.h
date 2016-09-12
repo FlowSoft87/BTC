@@ -1022,7 +1022,6 @@ public:
             datalist.add(BTagCompoundDataEntry());
             // tag
             datalist[datalist.size()-1].tag = deserializeString8(is);
-            std::cout << datalist[datalist.size()-1].tag << std::endl;
             // type
             type_temp = deserializeByte(is);
             // create new tag
