@@ -7,19 +7,20 @@
 namespace BTC {
 namespace serialize_ {
 
-class BTagStringArr : public BTagArr<STRING_T> {
+template<typename T>
+class BTagStringArr : public BTagArr<T> {
 
   public:
-    BTagStringArr() : BTagArr<STRING_T>() {}
+    BTagStringArr() : BTagArr<T>() {}
 
-    BTagStringArr(const BTagStringArr& bt) : BTagArr<STRING_T>(bt) {}
+    BTagStringArr(const BTagStringArr& bt) : BTagArr<T>(bt) {}
 
 #ifdef ASSERT_C11
-    BTagStringArr(BTagStringArr&& bt) : BTagArr<STRING_T>(bt) {}
+    BTagStringArr(BTagStringArr&& bt) : BTagArr<T>(bt) {}
 #endif
 
-    BTagStringArr(STRING_T* value, const SIZE_T& length, bool ownership) 
-            : BTagArr<STRING_T>(value,length,ownership) {}
+    BTagStringArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
 
     UINT8_T getTypeID() const {
         return DataTypeID::STRING_ARR;

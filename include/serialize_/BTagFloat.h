@@ -7,12 +7,13 @@
 namespace BTC {
 namespace serialize_ {
 
-class BTagFloat : public BTagVal<FLOAT_T> {
+template<typename T>
+class BTagFloat : public BTagVal<T> {
 
   public:
-    BTagFloat() : BTagVal<FLOAT_T>() {}
-    BTagFloat(const BTagFloat& bt) : BTagVal<FLOAT_T>(bt) {}
-    BTagFloat(const FLOAT_T& value) : BTagVal<FLOAT_T>(value) {}
+    BTagFloat() : BTagVal<T>() {}
+    BTagFloat(const BTagFloat& bt) : BTagVal<T>(bt) {}
+    BTagFloat(const T& value) : BTagVal<T>(value) {}
 
     unsigned char getTypeID() const {
         return DataTypeID::FLOAT;

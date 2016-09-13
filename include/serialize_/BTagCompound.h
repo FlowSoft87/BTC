@@ -238,7 +238,8 @@ public:
         }
     }
 
-    void setFloat(const STRING_T& tag, const FLOAT_T& value) {
+    template<typename T>
+    void setFloat(const STRING_T& tag, const T& value) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -253,7 +254,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagFloat(value)
+                        (IBTagBase*) new BTagFloat<T>(value)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -264,7 +265,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagFloat(value)
+                                    (IBTagBase*) new BTagFloat<T>(value)
                                 )
                         )
                 );
@@ -272,7 +273,8 @@ public:
         }
     }
 
-    void setDouble(const STRING_T& tag, const DOUBLE_T& value) {
+    template<typename T>
+    void setDouble(const STRING_T& tag, const T& value) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -287,7 +289,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagDouble(value)
+                        (IBTagBase*) new BTagDouble<T>(value)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -298,7 +300,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagDouble(value)
+                                    (IBTagBase*) new BTagDouble<T>(value)
                                 )
                         )
                 );
@@ -306,7 +308,8 @@ public:
         }
     }
 
-    void setString(const STRING_T& tag, const STRING_T& value) {
+    template<typename T>
+    void setString(const STRING_T& tag, const T& value) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -321,7 +324,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagString(value)
+                        (IBTagBase*) new BTagString<T>(value)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -332,7 +335,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagString(value)
+                                    (IBTagBase*) new BTagString<T>(value)
                                 )
                         )
                 );
@@ -490,7 +493,8 @@ public:
 
     // Set an entry in the compound that points to the array.
     // Ownership is not claimed by this method.
-    void setFloatArray(const STRING_T& tag, FLOAT_T* array, SIZE_T len) {
+    template<typename T>
+    void setFloatArray(const STRING_T& tag, T* array, SIZE_T len) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -505,7 +509,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagFloatArr(array,len,false)
+                    (IBTagBase*) new BTagFloatArr<T>(array,len,false)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -516,7 +520,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagFloatArr(array,len,false)
+                                    (IBTagBase*) new BTagFloatArr<T>(array,len,false)
                                 )
                         )
                 );
@@ -526,7 +530,8 @@ public:
 
     // Set an entry in the compound that points to the array.
     // Ownership is not claimed by this method.
-    void setDoubleArray(const STRING_T& tag, DOUBLE_T* array, SIZE_T len) {
+    template<typename T>
+    void setDoubleArray(const STRING_T& tag, T* array, SIZE_T len) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -541,7 +546,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagDoubleArr(array,len,false)
+                    (IBTagBase*) new BTagDoubleArr<T>(array,len,false)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -552,7 +557,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagDoubleArr(array,len,false)
+                                    (IBTagBase*) new BTagDoubleArr<T>(array,len,false)
                                 )
                         )
                 );
@@ -562,7 +567,8 @@ public:
 
     // Set an entry in the compound that points to the array.
     // Ownership is not claimed by this method.
-    void setStringArray(const STRING_T& tag, STRING_T* array, SIZE_T len) {
+    template<typename T>
+    void setStringArray(const STRING_T& tag, T* array, SIZE_T len) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -577,7 +583,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagStringArr(array,len,false)
+                    (IBTagBase*) new BTagStringArr<T>(array,len,false)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -588,7 +594,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagStringArr(array,len,false)
+                                    (IBTagBase*) new BTagStringArr<T>(array,len,false)
                                 )
                         )
                 );
@@ -746,7 +752,8 @@ public:
 
     // Set an entry in the compound that points to the array.
     // Ownership is claimed by this method.
-    void passFloatArray(const STRING_T& tag, FLOAT_T* array, SIZE_T len) {
+    template<typename T>
+    void passFloatArray(const STRING_T& tag, T* array, SIZE_T len) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -761,7 +768,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagFloatArr(array,len,true)
+                    (IBTagBase*) new BTagFloatArr<T>(array,len,true)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -772,7 +779,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagFloatArr(array,len,true)
+                                    (IBTagBase*) new BTagFloatArr<T>(array,len,true)
                                 )
                         )
                 );
@@ -782,7 +789,8 @@ public:
 
     // Set an entry in the compound that points to the array.
     // Ownership is claimed by this method.
-    void passDoubleArray(const STRING_T& tag, DOUBLE_T* array, SIZE_T len) {
+    template<typename T>
+    void passDoubleArray(const STRING_T& tag, T* array, SIZE_T len) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -797,7 +805,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagDoubleArr(array,len,true)
+                    (IBTagBase*) new BTagDoubleArr<T>(array,len,true)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -808,7 +816,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagDoubleArr(array,len,true)
+                                    (IBTagBase*) new BTagDoubleArr<T>(array,len,true)
                                 )
                         )
                 );
@@ -818,7 +826,8 @@ public:
 
     // Set an entry in the compound that points to the array.
     // Ownership is claimed by this method.
-    void passStringArray(const STRING_T& tag, STRING_T* array, SIZE_T len) {
+    template<typename T>
+    void passStringArray(const STRING_T& tag, T* array, SIZE_T len) {
 #ifdef DEBUG
         if(tag.size() > 256) {
             std::cout << 
@@ -833,7 +842,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagStringArr(array,len,true)
+                    (IBTagBase*) new BTagStringArr<T>(array,len,true)
                 );
             datalist[tagmap[pos].position].data = new_ptr;
         } else {
@@ -844,7 +853,7 @@ public:
                     BTagCompoundDataEntry(
                             tag,
                             ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagStringArr(array,len,true)
+                                    (IBTagBase*) new BTagStringArr<T>(array,len,true)
                                 )
                         )
                 );
@@ -1031,7 +1040,7 @@ public:
             } else if(type_temp == DataTypeID::STRING) {
                 datalist[datalist.size()-1].data =
                     ptr_::SharedObjPtr<IBTagBase>::fromObject(
-                            (IBTagBase*) new BTagString()
+                            (IBTagBase*) new BTagString<STRING_T>()
                         );
             } else if(type_temp == DataTypeID::UINT8) {
                 datalist[datalist.size()-1].data =
@@ -1056,17 +1065,17 @@ public:
             } else if(type_temp == DataTypeID::FLOAT) {
                 datalist[datalist.size()-1].data =
                     ptr_::SharedObjPtr<IBTagBase>::fromObject(
-                            (IBTagBase*) new BTagFloat()
+                            (IBTagBase*) new BTagFloat<FLOAT_T>()
                         );
             } else if((type_temp) == DataTypeID::DOUBLE) {
                 datalist[datalist.size()-1].data =
                     ptr_::SharedObjPtr<IBTagBase>::fromObject(
-                            (IBTagBase*) new BTagDouble()
+                            (IBTagBase*) new BTagDouble<DOUBLE_T>()
                         );
             } else if((type_temp) == DataTypeID::STRING_ARR) {
                 datalist[datalist.size()-1].data =
                     ptr_::SharedObjPtr<IBTagBase>::fromObject(
-                            (IBTagBase*) new BTagStringArr()
+                            (IBTagBase*) new BTagStringArr<STRING_T>()
                         );
             } else if((type_temp) == DataTypeID::UINT8_ARR) {
                 datalist[datalist.size()-1].data =
@@ -1091,12 +1100,12 @@ public:
             } else if((type_temp) == DataTypeID::FLOAT_ARR) {
                 datalist[datalist.size()-1].data =
                     ptr_::SharedObjPtr<IBTagBase>::fromObject(
-                            (IBTagBase*) new BTagFloatArr()
+                            (IBTagBase*) new BTagFloatArr<FLOAT_T>()
                         );
             } else if((type_temp) == DataTypeID::DOUBLE_ARR) {
                 datalist[datalist.size()-1].data =
                     ptr_::SharedObjPtr<IBTagBase>::fromObject(
-                            (IBTagBase*) new BTagDoubleArr()
+                            (IBTagBase*) new BTagDoubleArr<DOUBLE_T>()
                         );
             }
             datalist[datalist.size()-1].data->deserialize(is);

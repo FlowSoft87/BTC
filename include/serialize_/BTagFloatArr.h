@@ -7,19 +7,20 @@
 namespace BTC {
 namespace serialize_ {
 
-class BTagFloatArr : public BTagArr<FLOAT_T> {
+template<typename T>
+class BTagFloatArr : public BTagArr<T> {
 
   public:
-    BTagFloatArr() : BTagArr<FLOAT_T>() {}
+    BTagFloatArr() : BTagArr<T>() {}
 
-    BTagFloatArr(const BTagFloatArr& bt) : BTagArr<FLOAT_T>(bt) {}
+    BTagFloatArr(const BTagFloatArr& bt) : BTagArr<T>(bt) {}
 
 #ifdef ASSERT_C11
-    BTagFloatArr(BTagFloatArr&& bt) : BTagArr<FLOAT_T>(bt) {}
+    BTagFloatArr(BTagFloatArr&& bt) : BTagArr<T>(bt) {}
 #endif
 
-    BTagFloatArr(FLOAT_T* value, const SIZE_T& length, bool ownership) 
-            : BTagArr<FLOAT_T>(value,length,ownership) {}
+    BTagFloatArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
 
     UINT8_T getTypeID() const {
         return DataTypeID::FLOAT_ARR;

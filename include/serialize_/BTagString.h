@@ -7,12 +7,13 @@
 namespace BTC {
 namespace serialize_ {
 
-class BTagString : public BTagVal<STRING_T> {
+template<typename T>
+class BTagString : public BTagVal<T> {
 
   public:
-    BTagString() : BTagVal<STRING_T>() {}
-    BTagString(const BTagString& bt) : BTagVal<STRING_T>(bt) {}
-    BTagString(const STRING_T& value) : BTagVal<STRING_T>(value) {}
+    BTagString() : BTagVal<T>() {}
+    BTagString(const BTagString& bt) : BTagVal<T>(bt) {}
+    BTagString(const STRING_T& value) : BTagVal<T>(value) {}
 
     unsigned char getTypeID() const {
         return DataTypeID::STRING;

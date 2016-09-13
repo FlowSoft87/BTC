@@ -7,19 +7,20 @@
 namespace BTC {
 namespace serialize_ {
 
-class BTagDoubleArr : public BTagArr<DOUBLE_T> {
+template<typename T>
+class BTagDoubleArr : public BTagArr<T> {
 
   public:
-    BTagDoubleArr() : BTagArr<DOUBLE_T>() {}
+    BTagDoubleArr() : BTagArr<T>() {}
 
-    BTagDoubleArr(const BTagDoubleArr& bt) : BTagArr<DOUBLE_T>(bt) {}
+    BTagDoubleArr(const BTagDoubleArr& bt) : BTagArr<T>(bt) {}
 
 #ifdef ASSERT_C11
-    BTagDoubleArr(BTagDoubleArr&& bt) : BTagArr<DOUBLE_T>(bt) {}
+    BTagDoubleArr(BTagDoubleArr&& bt) : BTagArr<T>(bt) {}
 #endif
 
-    BTagDoubleArr(DOUBLE_T* value, const SIZE_T& length, bool ownership) 
-            : BTagArr<DOUBLE_T>(value,length,ownership) {}
+    BTagDoubleArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
 
     UINT8_T getTypeID() const {
         return DataTypeID::DOUBLE_ARR;
