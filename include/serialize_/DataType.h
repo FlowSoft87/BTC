@@ -7,9 +7,9 @@ namespace serialize_ {
 #ifndef ASSERT_C11
 typedef size_t SIZE_T;
 typedef unsigned char UINT8_T;
-typedef unsigned short UINT16_T;
-typedef unsigned long UINT32_T;
-typedef unsigned long long UINT64_T;
+typedef unsigned short int UINT16_T;
+typedef unsigned long int UINT32_T;
+typedef unsigned long long int UINT64_T;
 typedef float FLOAT_T;
 typedef double DOUBLE_T;
 typedef std::string STRING_T;

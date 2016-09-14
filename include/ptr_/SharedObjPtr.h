@@ -1,5 +1,5 @@
-#ifndef PTR_SHAREDOBJPOINTER_H
-#define PTR_SHAREDOBJPOINTER_H
+#ifndef BTC_PTR_SHAREDOBJPOINTER_H
+#define BTC_PTR_SHAREDOBJPOINTER_H
 
 namespace BTC {
 namespace ptr_ {

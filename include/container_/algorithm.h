@@ -1,5 +1,5 @@
-#ifndef ALGORITHM_ALGORITHM_H
-#define ALGORITHM_ALGORITHM_H
+#ifndef BTC_CONTAINER_ALGORITHM_H
+#define BTC_CONTAINER_ALGORITHM_H
 
 #include <algorithm>
 

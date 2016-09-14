@@ -180,7 +180,7 @@ FLOAT_T deserializeFloat(std::istream& is) {
         if((data & (UINT32_T)(1)) == 1) val = -std::numeric_limits<FLOAT_T>::infinity();
         else val = std::numeric_limits<FLOAT_T>::infinity();
         return val;
-    } else if(val == 0.5 && exp == 255) {
+    } else if(val == 0.5f && exp == 255) {
         // Handle quiet NaN case
         if((data & (UINT32_T)(1)) == 1) val = -std::numeric_limits<FLOAT_T>::quiet_NaN();
         else val = std::numeric_limits<FLOAT_T>::quiet_NaN();

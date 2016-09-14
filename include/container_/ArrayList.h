@@ -1,5 +1,5 @@
-#ifndef ARRAYLIST_ARRAYLIST_H
-#define ARRAYLIST_ARRAYLIST_H
+#ifndef BTC_CONTAINER_ARRAYLIST_H
+#define BTC_CONTAINER_ARRAYLIST_H
 
 #include <iostream>
 #include <vector>
