@@ -33,7 +33,7 @@ void serializeShort(std::ostream& o, UINT16_T s) {
 
 UINT16_T deserializeShort(std::istream& i) {
     UINT16_T data = 0;
-    data += deserializeByte(i)*256;
+    data += ((UINT16_T)deserializeByte(i))*256;
     data += deserializeByte(i);
     return(data);
 }
@@ -51,7 +51,7 @@ void serializeInt(std::ostream& o, const UINT32_T& i) {
 
 UINT32_T deserializeInt(std::istream& i) {
     UINT32_T data = 0;
-    data += deserializeShort(i)*65536;
+    data += ((UINT32_T)deserializeShort(i))*65536;
     data += deserializeShort(i);
     return(data);
 }
@@ -70,7 +70,7 @@ void serializeLong(std::ostream& o, const UINT64_T& i) {
 
 UINT64_T deserializeLong(std::istream& i) {
     UINT64_T data = 0;
-    data += deserializeInt(i)*4294967296;
+    data += ((UINT64_T)deserializeInt(i))*4294967296;
     data += deserializeInt(i);
     return(data);
 }
@@ -111,7 +111,7 @@ T deserializeIntVar(std::istream& i) {
  * The number is decomposed numerically and stored in a uint32_t variable in a special format.
  * It is then serialized as a uint32_t to get rid of byte order issues.
  */
-void serializeFloat(std::ostream& os, FLOAT_T val) {
+void serializeFloat(std::ostream& os, const FLOAT_T& val) {
     UINT32_T data = 0;
     int exp = 0;
     FLOAT_T mant = std::frexp(val,&exp);
@@ -199,7 +199,7 @@ FLOAT_T deserializeFloat(std::istream& is) {
  * The number is decomposed numerically and stored in a uint64_t variable in a special format.
  * It is then serialized as a uint64_t to get rid of byte order issues.
  */
-void serializeDouble(std::ostream& os, DOUBLE_T val) {
+void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
     UINT64_T data = 0;
     int exp = 0;
     DOUBLE_T mant = std::frexp(val,&exp);
@@ -281,6 +281,46 @@ DOUBLE_T deserializeDouble(std::istream& is) {
     val = std::ldexp(val,exp);
     return(val);
 }
+
+/*template<typename T>
+void serializeFloat4(std::ostream& os, T value) {
+    // Get sign
+    bool s = (value < 0);
+    if (s) {
+        value = -value;
+    }
+    // Get exponent
+    int e = (int)std::log2(value);
+    // Get mantissa
+    UINT32_T m = (value/std::pow(2.f,e)-1)*8388608;
+    // Assemble final form
+    UINT32_T num = 0;
+    if (sign) {
+        num = 1;
+    }
+    num = num << 8;
+    e += 127;
+    num |= e;
+    num = num << 23;
+    serializeInt(os,num);
+}
+
+FLOAT_T deserializeFloat4(std::istream& is) {
+    UINT32_T value = deserializeInt(is);
+    // Get mantissa
+    UINT32_T m = value%8388608;
+    value /= 8388608;
+    // Get exponent
+    int e = value%256-127;
+    // Get sign
+    value /= 256;
+    // Build result
+    FLOAT_T result = m*std::pow(2.f,e);
+    if (value == 1) {
+        result = -result;
+    }
+    return result;
+}*/
 
 /**
  * Serialize a string where the length is limited to 2^8 chars.

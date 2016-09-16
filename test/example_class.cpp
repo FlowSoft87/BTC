@@ -85,12 +85,14 @@ int main() {
     for (size_t i=0, len=10*10; i<len; ++i) {
         dataptr[i] = double(rand())/double(RAND_MAX);
     }
+    std::cout << "Original matrix" << std::endl;
     mat.print(std::cout);
     // Serialize the matrix to stream
     std::stringstream ss;
     serializeMatrix(ss,mat);
-
+    // Deserialize the matrix from stream
     Matrix<double> new_mat = deserializeMatrix(ss);
+    std::cout << "Deserialized matrix" << std::endl;
     new_mat.print(std::cout);
 
     return 0;
