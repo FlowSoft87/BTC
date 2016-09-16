@@ -17,7 +17,7 @@ int main() {
     // Add the tag to the "outer" tag under name "inner_tag".
     test->setTag("inner_tag",tag);
     // Set values in the inner tag.
-    tag->setString("a_string","some string");
+    tag->setString("a_string",std::string("some string"));
     double* doubarr = new double[20];
     for (int i=0; i<20; ++i) {
         doubarr[i] = i*0.13413723472374e-15;

@@ -13,7 +13,7 @@ class BTagString : public BTagVal<T> {
   public:
     BTagString() : BTagVal<T>() {}
     BTagString(const BTagString& bt) : BTagVal<T>(bt) {}
-    BTagString(const STRING_T& value) : BTagVal<T>(value) {}
+    BTagString(const T& value) : BTagVal<T>(value) {}
 
     unsigned char getTypeID() const {
         return DataTypeID::STRING;
