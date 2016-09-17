@@ -1,8 +1,8 @@
 #ifndef SERIALIZE_SERIALIZEHELPER_H
 #define SERIALIZE_SERIALIZEHELPER_H
 
-#include <iostream>
-#include <netinet/in.h>
+#include <istream>
+#include <ostream>
 #include <limits>
 #include <cmath>
 
@@ -11,6 +11,7 @@ namespace serialize_ {
 
 /**
  * Serialize a single byte.
+ * Requirement is that the number is castable to BTC::UINT8_T.
  */
 void serializeByte(std::ostream& o, UINT8_T b) {
     o.write(reinterpret_cast<const char*>(&b),1);
@@ -23,54 +24,59 @@ UINT8_T deserializeByte(std::istream& i) {
 }
 
 /**
- * Serialize a 2 byte integer.
+ * Serialize an unsigned integer containing data of up to 2 byte.
+ * Integer has to fulfill (s < 2^16) and have integer division and
+ * modulo operations defined.
  */
 template<typename UINT16_T>
 void serializeShort(std::ostream& o, UINT16_T s) {
-    serializeByte(o,s/256);
-    serializeByte(o,s%256);
+    serializeByte(o,s/256u);
+    serializeByte(o,s%256u);
 }
 
 UINT16_T deserializeShort(std::istream& i) {
     UINT16_T data = 0;
-    data += ((UINT16_T)deserializeByte(i))*256;
+    data += (UINT16_T(deserializeByte(i)))*256u;
     data += deserializeByte(i);
     return(data);
 }
 
 /**
- * Serialize a 4 byte integer.
+ * Serialize an unsigned integer containing data of up to 4 byte.
+ * Integer has to fulfill (s < 2^32) and have integer division and
+ * modulo operations defined.
  */
 template<typename UINT32_T>
 void serializeInt(std::ostream& o, const UINT32_T& i) {
-    UINT16_T data = i/65536;
+    UINT16_T data = i/65536u;
     serializeShort(o,data);
-    data = i%65536;
+    data = i%65536u;
     serializeShort(o,data);
 }
 
 UINT32_T deserializeInt(std::istream& i) {
     UINT32_T data = 0;
-    data += ((UINT32_T)deserializeShort(i))*65536;
+    data += (UINT32_T(deserializeShort(i)))*65536u;
     data += deserializeShort(i);
     return(data);
 }
 
 /**
- * Serialize an 8 byte integer.
- * The number is split in two parts and then serialized as two 4 byte integers.
+ * Serialize an unsigned integer containing data of up to 8 byte.
+ * Integer has to fulfill (s < 2^64) and have integer division and
+ * modulo operations defined.
  */
 template<typename UINT64_T>
 void serializeLong(std::ostream& o, const UINT64_T& i) {
-    UINT32_T data = i/4294967296;
+    UINT32_T data = i/4294967296u;
     serializeInt(o,data);
-    data = i%4294967296;
+    data = i%4294967296u;
     serializeInt(o,data);
 }
 
 UINT64_T deserializeLong(std::istream& i) {
     UINT64_T data = 0;
-    data += ((UINT64_T)deserializeInt(i))*4294967296;
+    data += (UINT64_T(deserializeInt(i)))*4294967296u;
     data += deserializeInt(i);
     return(data);
 }
@@ -78,7 +84,8 @@ UINT64_T deserializeLong(std::istream& i) {
 /**
  * Serialize an arbitrary integer of maximum size of 8 byte.
  * Depending on how large the number is the correct representation is chosen.
- * For this purpose an extra byte is stored in front of the number which tells of what type the representation is.
+ * For this purpose an extra byte is stored in front of the number which tells 
+ * of what type the representation is.
  */
 template<typename T>
 void serializeIntVar(std::ostream& o, const T& i) {
@@ -108,7 +115,9 @@ T deserializeIntVar(std::istream& i) {
 
 /**
  * Serialize a floating point number of size 4 byte.
- * The number is decomposed numerically and stored in a uint32_t variable in a special format.
+ * The number is decomposed numerically and stored in a uint32_t variable
+ * in the format |s|exp|mant| where s is 1 bit, exp is 8 bits and mant
+ * 23 bits long.
  * It is then serialized as a uint32_t to get rid of byte order issues.
  */
 void serializeFloat(std::ostream& os, const FLOAT_T& val) {
@@ -136,10 +145,10 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
         exp = 255;
     }
     // Write exponent
-    data += ((UINT32_T)exp)*8388608u;  // Set bits 23-30: 2^23
+    data += (UINT32_T(exp))*8388608u;  // Set bits 23-30: 2^23
     // Write mantissa
     mant -= 0.5f;  // Subtract hidden bit
-    data += (UINT32_T)(mant*16777216.f);  // Set bits 0-22: (0 <= mant < 0.5)
+    data += UINT32_T(mant*16777216.f);  // Set bits 0-22: (0 <= mant < 0.5)
     serializeInt(os,data);
 }
 
@@ -156,7 +165,7 @@ FLOAT_T deserializeFloat(std::istream& is) {
     int exp = data/8388608u;
     data %= 8388608u;
     // Get mantissa
-    val += ((FLOAT_T)data)/16777216.f;
+    val += (FLOAT_T(data))/16777216.f;
     // Special cases
     if(val == 0.5f && exp == 255) {
         // Handle zero case
@@ -223,13 +232,16 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
         exp = 2047;
     }
     // Write exponent
-    data += ((UINT64_T)exp)*4503599627370496ul;  // Set bits 52-62: 2^52
+    data += (UINT64_T(exp))*4503599627370496ul;  // Set bits 52-62: 2^52
     // Write mantissa
     mant -= 0.5d;  // Subtract hidden bit
-    data += (UINT64_T)(mant*9007199254740992.d);  // Set bits 0-51: (0 <= mant < 0.5)
+    data += UINT64_T(mant*9007199254740992.d);  // Set bits 0-51: (0 <= mant < 0.5)
     serializeLong(os,data);
 }
 
+/**
+ * Deserialize a floating point number of size 8 byte.
+ */
 DOUBLE_T deserializeDouble(std::istream& is) {
     UINT64_T data = deserializeLong(is);
     DOUBLE_T val = 0.5d;
@@ -240,7 +252,7 @@ DOUBLE_T deserializeDouble(std::istream& is) {
     int exp = data/4503599627370496ul;
     data %= 4503599627370496ul;
     // Get mantissa
-    val += ((DOUBLE_T)data)/9007199254740992.d;
+    val += (DOUBLE_T(data))/9007199254740992.d;
     if(val == 0.5d && exp == 2047) {
         // Handle zero case
         if(s) {
@@ -276,53 +288,13 @@ DOUBLE_T deserializeDouble(std::istream& is) {
     return(val);
 }
 
-/*template<typename T>
-void serializeFloat4(std::ostream& os, T value) {
-    // Get sign
-    bool s = (value < 0);
-    if (s) {
-        value = -value;
-    }
-    // Get exponent
-    int e = (int)std::log2(value);
-    // Get mantissa
-    UINT32_T m = (value/std::pow(2.f,e)-1)*8388608;
-    // Assemble final form
-    UINT32_T num = 0;
-    if (sign) {
-        num = 1;
-    }
-    num = num << 8;
-    e += 127;
-    num |= e;
-    num = num << 23;
-    serializeInt(os,num);
-}
-
-FLOAT_T deserializeFloat4(std::istream& is) {
-    UINT32_T value = deserializeInt(is);
-    // Get mantissa
-    UINT32_T m = value%8388608;
-    value /= 8388608;
-    // Get exponent
-    int e = value%256-127;
-    // Get sign
-    value /= 256;
-    // Build result
-    FLOAT_T result = m*std::pow(2.f,e);
-    if (value == 1) {
-        result = -result;
-    }
-    return result;
-}*/
-
 /**
  * Serialize a string where the length is limited to 2^8 chars.
  * The length is stored in front of the string.
  */
 void serializeString8(std::ostream& o, const STRING_T& s) {
 #ifdef DEBUG
-    if(s.size() > 256) {
+    if(s.size() > 256u) {
         std::cout << "Error (serialize_::SerializeHelper::serializeString8): Not a short string!" << std::endl;
         exit(1);
     }
@@ -350,7 +322,7 @@ STRING_T deserializeString8(std::istream& i) {
  */
 void serializeString16(std::ostream& o, const STRING_T& s) {
 #ifdef DEBUG
-    if(s.size() > 65536) {
+    if(s.size() > 65536u) {
         std::cout << "Error (serialize_::SerializeHelper::serializeString16): Not a short string!" << std::endl;
         exit(1);
     }
@@ -379,7 +351,7 @@ STRING_T deserializeString16(std::istream& i) {
  */
 void serializeString32(std::ostream& o, const STRING_T& s) {
 #ifdef DEBUG
-    if(s.size() > 4294967296) {
+    if(s.size() > 4294967296ul) {
         std::cout << "Error (serialize_::SerializeHelper::serializeString32): Not a short string!" << std::endl;
         exit(1);
     }
