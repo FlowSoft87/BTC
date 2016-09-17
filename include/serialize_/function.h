@@ -123,13 +123,16 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
     exp += 127;
     // Special cases
     // TODO Eliminate the dependence on the limits include (Flo)
-    if(mant == std::numeric_limits<FLOAT_T>::infinity()) {
+    if (val == 0) {
+        mant = 0.5f;
+        exp = 255;
+    } else if(mant == std::numeric_limits<FLOAT_T>::infinity()) {
         // Handle inf case
-        mant = 0.f;
+        mant = 0.75f;
         exp = 255;
     } else if(isnan(val)) {
         // Handle quiet NaN case
-        mant = 0.5f;
+        mant = 0.875f;
         exp = 255;
     }
     // Write exponent
@@ -154,17 +157,25 @@ FLOAT_T deserializeFloat(std::istream& is) {
     data %= 8388608u;
     // Get mantissa
     val += ((FLOAT_T)data)/16777216.f;
-    // Handle inf case
-    if(val == 0 && exp == 255) {
+    // Special cases
+    if(val == 0.5f && exp == 255) {
+        // Handle zero case
+        if(s) {
+            val = -0.f;
+        } else {
+            val = 0.f;
+        }
+        return val;
+    } else if (val == 0.75f && exp == 255) {
+        // Handle inf case
         if(s) {
             val = -std::numeric_limits<FLOAT_T>::infinity();
         } else {
             val = std::numeric_limits<FLOAT_T>::infinity();
         }
         return val;
-    }
-    // Handle quiet NaN case
-    else if(val == 0.5f && exp == 255) {
+    } else if (val == 0.875f && exp == 255) {
+        // Handle quiet NaN case
         if (s) {
             val = -std::numeric_limits<FLOAT_T>::quiet_NaN();
         } else {
@@ -199,13 +210,16 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
     exp += 1023;
     // Special cases
     // TODO Eliminate the dependence on the limits include (Flo)
-    if(mant == std::numeric_limits<DOUBLE_T>::infinity()) {
+    if (val == 0) {
+        mant = 0.5d;
+        exp = 2047;
+    } else if(mant == std::numeric_limits<DOUBLE_T>::infinity()) {
         // Handle inf case
-        mant = 0.d;
+        mant = 0.75d;
         exp = 2047;
     } else if(isnan(val)) {
         // Handle quiet NaN case
-        mant = 0.5d;
+        mant = 0.875d;
         exp = 2047;
     }
     // Write exponent
@@ -227,17 +241,24 @@ DOUBLE_T deserializeDouble(std::istream& is) {
     data %= 4503599627370496ul;
     // Get mantissa
     val += ((DOUBLE_T)data)/9007199254740992.d;
-    // Handle inf case
-    if(val == 0 && exp == 2047) {
+    if(val == 0.5d && exp == 2047) {
+        // Handle zero case
+        if(s) {
+            val = -0.d;
+        } else {
+            val = 0.d;
+        }
+        return val;
+    } else if(val == 0.75d && exp == 2047) {
+        // Handle inf case
         if(s) {
             val = -std::numeric_limits<DOUBLE_T>::infinity();
         } else {
             val = std::numeric_limits<DOUBLE_T>::infinity();
         }
         return val;
-    }
-    // Handle quiet NaN case
-    else if(val == 0.5d && exp == 2047) {
+    } else if(val == 0.875d && exp == 2047) {
+        // Handle quiet NaN case
         if (s) {
             val = -std::numeric_limits<DOUBLE_T>::quiet_NaN();
         } else {
