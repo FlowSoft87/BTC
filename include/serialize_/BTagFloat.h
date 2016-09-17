@@ -28,7 +28,7 @@ class BTagFloat : public BTagVal<T> {
     }
 
     std::ostream& print(std::ostream& os, unsigned char increment) const {
-        os << int(getTypeID()) << ',' << this->data;
+        os << "f{" << this->data << '}';
         return os;
     }
 };

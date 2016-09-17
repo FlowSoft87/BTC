@@ -39,7 +39,7 @@ class BTagStringArr : public BTagArr<T> {
     }
 
     std::ostream& print(std::ostream& os, UINT8_T increment) const {
-        os << int(getTypeID()) << ',' << this->len << ',' << this->owner;
+        os << "sta{len=" << this->len << ",own=" << this->owner << '}';
         return os;
     }
 };

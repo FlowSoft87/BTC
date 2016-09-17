@@ -1117,7 +1117,7 @@ public:
     }
 
     std::ostream& print(std::ostream& os, UINT8_T increment) const {
-        os << int(getTypeID()) << ",{";
+        os << "c{";
         if (datalist.size() == 0) {
             os << "}";
             return os;

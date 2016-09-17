@@ -28,7 +28,7 @@ class BTagShort : public BTagVal<T> {
     }
 
     std::ostream& print(std::ostream& os, unsigned char increment) const {
-        os << int(getTypeID()) << ',' << this->data;
+        os << "s{" << this->data << '}';
         return os;
     }
 };

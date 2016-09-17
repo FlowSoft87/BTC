@@ -1,3 +1,5 @@
+all: simple class
+
 simple:
 	g++ -o example_simple example_simple.cpp -I../include
 

@@ -28,7 +28,7 @@ class BTagDouble : public BTagVal<T> {
     }
 
     std::ostream& print(std::ostream& os, unsigned char increment) const {
-        os << int(getTypeID()) << ',' << this->data;
+        os << "d{" << this->data << '}';
         return os;
     }
 };
