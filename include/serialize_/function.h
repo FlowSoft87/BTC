@@ -82,13 +82,13 @@ UINT64_T deserializeLong(std::istream& i) {
  */
 template<typename T>
 void serializeIntVar(std::ostream& o, const T& i) {
-    if(i <= 256) {
+    if(i <= 256u) {
         serializeByte(o,0);
         serializeByte(o,i);
-    } else if((i > 256) && (i <= 65536)) {
+    } else if((i > 256u) && (i <= 65536u)) {
         serializeByte(o,1);
         serializeShort(o,i);
-    } else if((i > 65536) && (i <= 4294967296)) {
+    } else if((i > 65536u) && (i <= 4294967296u)) {
         serializeByte(o,2);
         serializeInt(o,i);
     } else {
@@ -115,15 +115,14 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
     UINT32_T data = 0;
     int exp = 0;
     FLOAT_T mant = std::frexp(val,&exp);
-    if (mant < 0.f) {
-        mant = -mant;
-    }
-    UINT32_T curPow = std::pow(2,7);
-    FLOAT_T curPow_d = 1.f/4.f;
-    exp += 127;
     // Write sign
-    if(std::signbit(val)) data = 1;
-    data = data << 1;
+    if (mant < 0) {
+        mant = -mant;
+        data += 2147483648u;  // Set bit 31: 2^31
+    }
+    exp += 127;
+    // Special cases
+    // TODO Eliminate the dependence on the limits include (Flo)
     if(mant == std::numeric_limits<FLOAT_T>::infinity()) {
         // Handle inf case
         mant = 0.f;
@@ -133,24 +132,11 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
         mant = 0.5f;
         exp = 255;
     }
-    // Set the bits in the number
     // Write exponent
-    for(UINT8_T i=0; i<8; ++i) {
-        //mask = exp/curPow;
-        data |= (UINT32_T)(exp/curPow);
-        exp = exp%curPow;
-        curPow /= 2;
-        data = data << 1;
-    }
+    data += ((UINT32_T)exp)*8388608u;  // Set bits 23-30: 2^23
     // Write mantissa
-    mant = std::fmod(mant,1.f/2.f);
-    for(UINT8_T i=0; i<22; ++i) {
-        data |= (UINT32_T)(mant/curPow_d);
-        mant = fmod(mant,curPow_d);
-        curPow_d /= 2.f;
-        data = data << 1;
-    }
-    data |= (UINT32_T)(mant/curPow_d);
+    mant -= 0.5f;  // Subtract hidden bit
+    data += (UINT32_T)(mant*16777216.f);  // Set bits 0-22: (0 <= mant < 0.5)
     serializeInt(os,data);
 }
 
@@ -160,34 +146,36 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
 FLOAT_T deserializeFloat(std::istream& is) {
     UINT32_T data = deserializeInt(is);
     FLOAT_T val = 0.5f;
-    int exp = 0;
-    UINT32_T curPow = 1;
-    FLOAT_T curPow_d = 1.f/std::pow(2.f,24);
-    // Deserialize mantissa
-    for(UINT8_T i=0; i<23; ++i) {
-        val += (data & (UINT32_T)(1))*curPow_d;
-        curPow_d *= 2.f;
-        data = data >> 1;
-    }
-    // Deserialize exponent
-    for(UINT8_T i=0; i<8; ++i) {
-        exp += (data & (UINT32_T)(1))*curPow;
-        curPow *= 2;
-        data = data >> 1;
-    }
+    // Get sign
+    bool s = data/2147483648u;
+    data %= 2147483648u;
+    // Get exponent
+    int exp = data/8388608u;
+    data %= 8388608u;
+    // Get mantissa
+    val += ((FLOAT_T)data)/16777216.f;
+    // Handle inf case
     if(val == 0 && exp == 255) {
-        // Handle inf case
-        if((data & (UINT32_T)(1)) == 1) val = -std::numeric_limits<FLOAT_T>::infinity();
-        else val = std::numeric_limits<FLOAT_T>::infinity();
+        if(s) {
+            val = -std::numeric_limits<FLOAT_T>::infinity();
+        } else {
+            val = std::numeric_limits<FLOAT_T>::infinity();
+        }
         return val;
-    } else if(val == 0.5f && exp == 255) {
-        // Handle quiet NaN case
-        if((data & (UINT32_T)(1)) == 1) val = -std::numeric_limits<FLOAT_T>::quiet_NaN();
-        else val = std::numeric_limits<FLOAT_T>::quiet_NaN();
+    }
+    // Handle quiet NaN case
+    else if(val == 0.5f && exp == 255) {
+        if (s) {
+            val = -std::numeric_limits<FLOAT_T>::quiet_NaN();
+        } else {
+            val = std::numeric_limits<FLOAT_T>::quiet_NaN();
+        }
         return val;
     }
     // Normal number
-    if((data & (UINT32_T)(1)) == 1) val = -val;
+    if (s) {
+        val = -val;
+    }
     exp -= 127;
     // Multiply them together
     val = std::ldexp(val,exp);
@@ -202,16 +190,15 @@ FLOAT_T deserializeFloat(std::istream& is) {
 void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
     UINT64_T data = 0;
     int exp = 0;
-    DOUBLE_T mant = std::frexp(val,&exp);
-    if (mant < 0.d) {
-        mant = -mant;
-    }
-    UINT64_T curPow = std::pow(2,10);
-    DOUBLE_T curPow_d = 1.d/4.d;
-    exp += 1023;
+    DOUBLE_T mant = std::frexp(val,&exp);  // Split double into mant and exp: val = mant*2^exp
     // Write sign
-    if(std::signbit(val)) data = 1;
-    data = data << 1;
+    if (mant < 0) {
+        mant = -mant;
+        data += 9223372036854775808ul;  // Set bit 63: 2^63
+    }
+    exp += 1023;
+    // Special cases
+    // TODO Eliminate the dependence on the limits include (Flo)
     if(mant == std::numeric_limits<DOUBLE_T>::infinity()) {
         // Handle inf case
         mant = 0.d;
@@ -221,61 +208,47 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
         mant = 0.5d;
         exp = 2047;
     }
-    // Set the bits in the number
     // Write exponent
-    for(UINT8_T i=0; i<11; ++i) {
-        //mask = exp/curPow;
-        data |= (UINT64_T)(exp/curPow);
-        exp = exp%curPow;
-        curPow /= 2;
-        data = data << 1;
-    }
+    data += ((UINT64_T)exp)*4503599627370496ul;  // Set bits 52-62: 2^52
     // Write mantissa
-    mant = std::fmod(mant,1.d/2.d);
-    for(UINT8_T i=0; i<51; ++i){
-        data |= (UINT64_T)(mant/curPow_d);
-        mant = fmod(mant,curPow_d);
-        curPow_d /= 2.d;
-        data = data << 1;
-    }
-    data |= (UINT64_T)(mant/curPow_d);
+    mant -= 0.5d;  // Subtract hidden bit
+    data += (UINT64_T)(mant*9007199254740992.d);  // Set bits 0-51: (0 <= mant < 0.5)
     serializeLong(os,data);
 }
 
 DOUBLE_T deserializeDouble(std::istream& is) {
     UINT64_T data = deserializeLong(is);
     DOUBLE_T val = 0.5d;
-    int exp = 0;
-    UINT64_T curPow = 1;
-    DOUBLE_T curPow_d = 1.d/std::pow(2.d,53);
-    // Deserialize mantissa
-    for(UINT8_T i=0; i<52; ++i) {
-        val += (data & (UINT64_T)(1))*curPow_d;
-        curPow_d *= 2.d;
-        data = data >> 1;
-    }
-    // Deserialize exponent
-    for(UINT8_T i=0; i<11; ++i) {
-        exp += (data & (UINT64_T)(1))*curPow;
-        curPow *= 2;
-        data = data >> 1;
-    }
+    // Get sign
+    bool s = data/9223372036854775808ul;
+    data %= 9223372036854775808ul;
+    // Get exponent
+    int exp = data/4503599627370496ul;
+    data %= 4503599627370496ul;
+    // Get mantissa
+    val += ((DOUBLE_T)data)/9007199254740992.d;
     // Handle inf case
-    if(val == 0.d && exp == 2047)
-    {
-        if((data & (UINT64_T)(1)) == 1) val = -std::numeric_limits<DOUBLE_T>::infinity();
-        else val = std::numeric_limits<DOUBLE_T>::infinity();
+    if(val == 0 && exp == 2047) {
+        if(s) {
+            val = -std::numeric_limits<DOUBLE_T>::infinity();
+        } else {
+            val = std::numeric_limits<DOUBLE_T>::infinity();
+        }
         return val;
     }
     // Handle quiet NaN case
-    else if(val == 0.5d && exp == 2047)
-    {
-        if((data & (UINT64_T)(1)) == 1) val = -std::numeric_limits<DOUBLE_T>::quiet_NaN();
-        else val = std::numeric_limits<DOUBLE_T>::quiet_NaN();
+    else if(val == 0.5d && exp == 2047) {
+        if (s) {
+            val = -std::numeric_limits<DOUBLE_T>::quiet_NaN();
+        } else {
+            val = std::numeric_limits<DOUBLE_T>::quiet_NaN();
+        }
         return val;
     }
     // Normal number
-    if((data & (UINT64_T)(1)) == 1) val = -val;
+    if (s) {
+        val = -val;
+    }
     exp -= 1023;
     // Multiply them together
     val = std::ldexp(val,exp);

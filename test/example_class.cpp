@@ -51,27 +51,27 @@ class Matrix {
     }
 };
 
-void serializeMatrix(std::ostream& os, const Matrix<double>& matrix) {
+void serializeMatrix(std::ostream& os, const Matrix<float>& matrix) {
     BTC::BTagCompoundPtr serializer(new BTC::BTagCompound());
     // Set row- and col-dimension
     serializer->setInt("row",matrix.getRowDim());
     serializer->setInt("col",matrix.getRowDim());
     // Just set the array as the ownership remains with the std::vector!
-    serializer->setDoubleArray("data",matrix.getDataPtr(),
+    serializer->setFloatArray("data",matrix.getDataPtr(),
                                matrix.getRowDim()*matrix.getColDim());
     // Serialize to the outstream
     serializer->serialize(os);
 }
 
-Matrix<double> deserializeMatrix(std::istream& is) {
+Matrix<float> deserializeMatrix(std::istream& is) {
     BTC::BTagCompoundPtr serializer(new BTC::BTagCompound());
     serializer->deserialize(is);
     // Create new matrix
-    Matrix<double> result(serializer->getValue<BTC::UINT32_T>("row"),
+    Matrix<float> result(serializer->getValue<BTC::UINT32_T>("row"),
                           serializer->getValue<BTC::UINT32_T>("col"));
     BTC::SIZE_T len;
-    double* data = result.getDataPtr();
-    BTC::DOUBLE_T* deserialized_data = serializer->getArray<BTC::DOUBLE_T>("data",len);
+    float* data = result.getDataPtr();
+    BTC::FLOAT_T* deserialized_data = serializer->getArray<BTC::FLOAT_T>("data",len);
     for (size_t i=0; i<len; ++i) {
         data[i] = deserialized_data[i];
     }
@@ -80,10 +80,10 @@ Matrix<double> deserializeMatrix(std::istream& is) {
 
 int main() {
     // Set up matrix
-    Matrix<double> mat(10,10);
-    double* dataptr = mat.getDataPtr();
+    Matrix<float> mat(10,10);
+    float* dataptr = mat.getDataPtr();
     for (size_t i=0, len=10*10; i<len; ++i) {
-        dataptr[i] = double(rand())/double(RAND_MAX);
+        dataptr[i] = (float(rand())/float(RAND_MAX)-0.5);
     }
     std::cout << "Original matrix" << std::endl;
     mat.print(std::cout);
@@ -91,7 +91,7 @@ int main() {
     std::stringstream ss;
     serializeMatrix(ss,mat);
     // Deserialize the matrix from stream
-    Matrix<double> new_mat = deserializeMatrix(ss);
+    Matrix<float> new_mat = deserializeMatrix(ss);
     std::cout << "Deserialized matrix" << std::endl;
     new_mat.print(std::cout);
 
