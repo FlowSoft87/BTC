@@ -108,29 +108,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagByte<T>(value)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagByte<T>(value)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagByte<T> >(new BTagByte<T>(value)));
     }
 
     template<typename T>
@@ -143,29 +121,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagShort<T>(value)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagShort<T>(value)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagShort<T> >(new BTagShort<T>(value)));
     }
 
     template<typename T>
@@ -178,29 +134,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagInt<T>(value)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagInt<T>(value)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagInt<T> >(new BTagInt<T>(value)));
     }
 
     template<typename T>
@@ -213,29 +147,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagLong<T>(value)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagLong<T>(value)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagLong<T> >(new BTagLong<T>(value)));
     }
 
     template<typename T>
@@ -248,29 +160,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagFloat<T>(value)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagFloat<T>(value)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagFloat<T> >(new BTagFloat<T>(value)));
     }
 
     template<typename T>
@@ -283,29 +173,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagDouble<T>(value)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagDouble<T>(value)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagDouble<T> >(new BTagDouble<T>(value)));
     }
 
     template<typename T>
@@ -318,29 +186,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                        (IBTagBase*) new BTagString<T>(value)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagString<T>(value)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagString<T> >(new BTagString<T>(value)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -355,29 +201,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagByteArr<T>(array,len,false)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagByteArr<T>(array,len,false)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagByteArr<T> >(new BTagByteArr<T>(array,len,false)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -392,29 +216,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagShortArr<T>(array,len,false)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagShortArr<T>(array,len,false)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagShortArr<T> >(new BTagShortArr<T>(array,len,false)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -429,29 +231,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagIntArr<T>(array,len,false)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagIntArr<T>(array,len,false)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagIntArr<T> >(new BTagIntArr<T>(array,len,false)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -466,29 +246,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagLongArr<T>(array,len,false)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagLongArr<T>(array,len,false)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagLongArr<T> >(new BTagLongArr<T>(array,len,false)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -503,29 +261,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagFloatArr<T>(array,len,false)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagFloatArr<T>(array,len,false)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagFloatArr<T> >(new BTagFloatArr<T>(array,len,false)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -540,29 +276,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagDoubleArr<T>(array,len,false)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagDoubleArr<T>(array,len,false)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagDoubleArr<T> >(new BTagDoubleArr<T>(array,len,false)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -577,29 +291,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagStringArr<T>(array,len,false)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagStringArr<T>(array,len,false)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagStringArr<T> >(new BTagStringArr<T>(array,len,false)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -614,29 +306,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagByteArr<T>(array,len,true)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagByteArr<T>(array,len,true)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagByteArr<T> >(new BTagByteArr<T>(array,len,true)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -651,29 +321,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagShortArr<T>(array,len,true)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagShortArr<T>(array,len,true)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagShortArr<T> >(new BTagShortArr<T>(array,len,true)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -688,29 +336,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagIntArr<T>(array,len,true)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagIntArr<T>(array,len,true)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagIntArr<T> >(new BTagIntArr<T>(array,len,true)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -725,29 +351,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagLongArr<T>(array,len,true)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagLongArr<T>(array,len,true)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagLongArr<T> >(new BTagLongArr<T>(array,len,true)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -762,29 +366,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagFloatArr<T>(array,len,true)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagFloatArr<T>(array,len,true)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagFloatArr<T> >(new BTagFloatArr<T>(array,len,true)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -799,29 +381,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagDoubleArr<T>(array,len,true)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagDoubleArr<T>(array,len,true)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagDoubleArr<T> >(new BTagDoubleArr<T>(array,len,true)));
     }
 
     // Set an entry in the compound that points to the array.
@@ -836,29 +396,7 @@ public:
             exit(1);
         }
 #endif
-        BTagCompoundEntry searchtag;
-        searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
-        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
-            // Tag exists already -> set to new value
-            ptr_::SharedObjPtr<IBTagBase> new_ptr(
-                    (IBTagBase*) new BTagStringArr<T>(array,len,true)
-                );
-            datalist[tagmap[pos].position].data = new_ptr;
-        } else {
-            // Tag does not exist -> add to list
-            searchtag.position = datalist.size();
-            tagmap.add(searchtag);
-            datalist.add(
-                    BTagCompoundDataEntry(
-                            tag,
-                            ptr_::SharedObjPtr<IBTagBase>(
-                                    (IBTagBase*) new BTagStringArr<T>(array,len,true)
-                                )
-                        )
-                );
-            container_::sort(tagmap);
-        }
+        setTag(tag, ptr_::SharedObjPtr<BTagStringArr<T> >(new BTagStringArr<T>(array,len,true)));
     }
 
     // Get methods.
@@ -1012,6 +550,17 @@ public:
 
     UINT8_T getTypeID() const {
         return DataTypeID::COMPOUND;
+    }
+
+    UINT8_T getTypeID(const STRING_T& key) const {
+        BTagCompoundEntry searchtag;
+        searchtag.tag = key;
+        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(key) == 0)) {
+            return(datalist[tagmap[pos].position].data->getTypeID());
+        } else {
+            return 255u;
+        }
     }
 
     // Serialization methods.
