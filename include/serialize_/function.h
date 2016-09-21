@@ -131,11 +131,10 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
     }
     exp += 127;
     // Special cases
-    // TODO Eliminate the dependence on the limits include (Flo)
     if (val == 0) {
         mant = 0.5f;
         exp = 255;
-    } else if(mant == std::numeric_limits<FLOAT_T>::infinity()) {
+    } else if(isinf(val)) {
         // Handle inf case
         mant = 0.75f;
         exp = 255;
@@ -186,9 +185,9 @@ FLOAT_T deserializeFloat(std::istream& is) {
     } else if (val == 0.875f && exp == 255) {
         // Handle quiet NaN case
         if (s) {
-            val = -std::numeric_limits<FLOAT_T>::quiet_NaN();
+            val = -nanf("");
         } else {
-            val = std::numeric_limits<FLOAT_T>::quiet_NaN();
+            val = nanf("");
         }
         return val;
     }
@@ -218,11 +217,10 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
     }
     exp += 1023;
     // Special cases
-    // TODO Eliminate the dependence on the limits include (Flo)
     if (val == 0) {
         mant = 0.5d;
         exp = 2047;
-    } else if(mant == std::numeric_limits<DOUBLE_T>::infinity()) {
+    } else if(isinf(val)) {
         // Handle inf case
         mant = 0.75d;
         exp = 2047;
@@ -272,9 +270,9 @@ DOUBLE_T deserializeDouble(std::istream& is) {
     } else if(val == 0.875d && exp == 2047) {
         // Handle quiet NaN case
         if (s) {
-            val = -std::numeric_limits<DOUBLE_T>::quiet_NaN();
+            val = -nan("");
         } else {
-            val = std::numeric_limits<DOUBLE_T>::quiet_NaN();
+            val = nan("");
         }
         return val;
     }

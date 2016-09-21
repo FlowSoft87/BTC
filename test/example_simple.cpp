@@ -12,6 +12,8 @@ int main() {
     test->setInt("integer",1);
     test->setFloat("float",1.4f);
     test->setDouble("double",1.3452e-10);
+    test->setDouble("infval",-1./0.);
+    test->setFloat("nanval",-nan(""));
     // Create another tag.
     BTC::BTagCompoundPtr tag(new BTC::BTagCompound());
     // Add the tag to the "outer" tag under name "inner_tag".
