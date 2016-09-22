@@ -24,14 +24,23 @@
 #include "BTagCompoundEntry.h"
 #include "BTagCompoundDataEntry.h"
 
+#include "exception.h"
+
 namespace BTC {
 namespace serialize_ {
 
-/**
- * A binary list that maps tags to data.
- * The order of entries is maintained.
- * Can be serialized to stream.
- */
+// A binary list that maps tags to data.
+// The user is responsible for the actual type of his data.
+// Setting an entry in this list only specifies how the type
+// is serialized.
+// Retrieving data with the wrong type specified leads to
+// undefined behavior.
+// The order of entries is maintained.
+// When deserialized from a stream, the data types are set
+// to the corresponding type defined by the BTC data types.
+// Example:
+//     4 Byte integer -> BTC::UINT32_T
+//     8 Byte float -> BTC::DOUBLE_T
 class BTagCompound : public IBTagBase {
 
     // Sorted array to find tags using binary search
@@ -409,10 +418,11 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
             // TODO Add a runtime typecheck here! (Flo)
-            return(ptr_::SharedConstObjPtr<BT>::reinterpretCast(datalist[tagmap[pos].position].data));
+            return(ptr_::SharedConstObjPtr<BT>::reinterpretCast(
+                        datalist[tagmap[pos].position].data)
+                    );
         } else {
-            std::cout << "Error (serialize_::BTagCompound::getTag): Tag does not exist!" << std::endl;
-            exit(1);
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::getTag", tag);
         }
     }
 
@@ -427,13 +437,9 @@ public:
             // TODO Add a runtime typecheck here! (Flo)
             return(ptr_::SharedObjPtr<BT>::reinterpretCast(datalist[tagmap[pos].position].data));
         } else {
-            std::cout << "Error (serialize_::BTagCompound::getTag): Tag does not exist!" << std::endl;
-            exit(1);
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::getTag", tag);
         }
     }
-
-    //const ptr_::SharedObjPtr<IBTagBase> getTag(SIZE_T index) const;
-    //ptr_::SharedObjPtr<IBTagBase> getTag(SIZE_T index); // BTagCompound is mutable.
 
     template<typename T>
     const T& getValue(const STRING_T& tag) const {
@@ -442,15 +448,13 @@ public:
         SIZE_T pos = container_::search_lower(tagmap,searchtag);
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
-            //if (datalist[tagmap[pos].position].data->getTypeID() == DataTypeID::UINT8) {
+            if (isValue(datalist[tagmap[pos].position].data->getTypeID())) {
                 return((static_cast<BTagVal<T>&>(*(datalist[tagmap[pos].position].data))).data);
-            //} else {
-            //    std::cout << "Error (BTC::BTagCompound::getValue): Wrong type!" << std::endl;
-            //    exit(1);
-            //}
+            } else {
+                throw wrong_type_error("BTC::serialize_::BTagCompound::getValue", "value");
+            }
         } else {
-            std::cout << "Error (BTC::BTagCompound::getTag): Tag does not exist!" << std::endl;
-            exit(1);
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::getValue", tag);
         }
     }
 
@@ -461,15 +465,13 @@ public:
         SIZE_T pos = container_::search_lower(tagmap,searchtag);
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
-            //if (datalist[tagmap[pos].position].data->getTypeID() == DataTypeID::UINT8) {
+            if (isValue(datalist[tagmap[pos].position].data->getTypeID())) {
                 return((static_cast<BTagVal<T>&>(*(datalist[tagmap[pos].position].data))).data);
-            //} else {
-            //    std::cout << "Error (BTC::BTagCompound::getValue): Wrong type!" << std::endl;
-            //    exit(1);
-            //}
+            } else {
+                throw wrong_type_error("BTC::serialize_::BTagCompound::getValue", "value");
+            }
         } else {
-            std::cout << "Error (BTC::BTagCompound::getTag): Tag does not exist!" << std::endl;
-            exit(1);
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::getValue", tag);
         }
     }
 
@@ -481,17 +483,16 @@ public:
         SIZE_T pos = container_::search_lower(tagmap,searchtag);
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
-            //if (datalist[tagmap[pos].position].data->getTypeID() == DataTypeID::value) {
-                BTagArr<T>& temp = static_cast<BTagArr<T>&>(*(datalist[tagmap[pos].position].data));
+            if (isArray(datalist[tagmap[pos].position].data->getTypeID())) {
+                BTagArr<T>& temp = 
+                    static_cast<BTagArr<T>&>(*(datalist[tagmap[pos].position].data));
                 len = temp.len;
                 return(temp.data);
-            //} else {
-            //    std::cout << "Error (BTC::BTagCompound::getValue): Wrong type!" << std::endl;
-            //    exit(1);
-            //}
+            } else {
+                throw wrong_type_error("BTC::serialize_::BTagCompound::getArray", "array");
+            }
         } else {
-            std::cout << "Error (BTC::BTagCompound::getTag): Tag does not exist!" << std::endl;
-            exit(1);
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::getArray", tag);
         }
     }
 
@@ -502,17 +503,16 @@ public:
         SIZE_T pos = container_::search_lower(tagmap,searchtag);
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
-        //    if (datalist[tagmap[pos].position].data->getTypeID() == DataType<T*>::value) {
-                BTagArr<T>& temp = static_cast<BTagArr<T>&>(*(datalist[tagmap[pos].position].data));
+            if (isArray(datalist[tagmap[pos].position].data->getTypeID())) {
+                BTagArr<T>& temp = 
+                    static_cast<BTagArr<T>&>(*(datalist[tagmap[pos].position].data));
                 len = temp.len;
                 return(temp.data);
-        //    } else {
-        //        std::cout << "Error (BTC::BTagCompound::getValue): Wrong type!" << std::endl;
-        //        exit(1);
-        //    }
+            } else {
+                throw wrong_type_error("BTC::serialize_::BTagCompound::getArray", "array");
+            }
         } else {
-            std::cout << "Error (BTC::BTagCompound::getTag): Tag does not exist!" << std::endl;
-            exit(1);
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::getArray", tag);
         }
     }
 
@@ -524,18 +524,17 @@ public:
         SIZE_T pos = container_::search_lower(tagmap,searchtag);
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
-        //    if (datalist[tagmap[pos].position].data->getTypeID() == DataType<T*>::value) {
-                BTagArr<T>& temp = static_cast<BTagArr<T>&>(*(datalist[tagmap[pos].position].data));
+            if (isArray(datalist[tagmap[pos].position].data->getTypeID())) {
+                BTagArr<T>& temp = 
+                    static_cast<BTagArr<T>&>(*(datalist[tagmap[pos].position].data));
                 temp.owner = false;
                 len = temp.len;
                 return(temp.data);
-        //    } else {
-        //        std::cout << "Error (BTC::BTagCompound::getValue): Wrong type!" << std::endl;
-        //        exit(1);
-        //    }
+            } else {
+                throw wrong_type_error("BTC::serialize_::BTagCompound::retrieveArray", "array");
+            }
         } else {
-            std::cout << "Error (BTC::BTagCompound::getTag): Tag does not exist!" << std::endl;
-            exit(1);
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::retrieveArray", tag);
         }
     }
 
@@ -559,7 +558,7 @@ public:
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(key) == 0)) {
             return(datalist[tagmap[pos].position].data->getTypeID());
         } else {
-            return 255u;
+            throw tag_not_found_error("BTC::serialize_::BTagCompound::getTypeID", key);
         }
     }
 

@@ -44,6 +44,14 @@ static const unsigned char FLOAT_ARR = 69;
 static const unsigned char DOUBLE_ARR = 70;
 }
 
+bool isValue(unsigned char type_id) {
+    return((type_id > DataTypeID::COMPOUND) && (type_id < DataTypeID::STRING_ARR));
+}
+
+bool isArray(unsigned char type_id) {
+    return(type_id >= DataTypeID::STRING_ARR);
+}
+
 /*template<typename T> struct DataType { static const unsigned char value = 255; };
 template<> struct DataType<BTagCompound> { static const unsigned char value = 0; };
 template<> struct DataType<std::string> { static const unsigned char value = 1; };

@@ -43,13 +43,17 @@ int main() {
     // Print the values.
     std::cout << *test1 << std::endl;
     BTC::BTagCompoundPtr tag1 = test1->getTag<BTC::BTagCompound>("inner_tag");
-    std::cout << tag1->getValue<unsigned short>("bla") << std::endl;
-    size_t len;
-    doubarr = tag1->getArray<double>("doubarr",len);
+    std::cout << tag1->getValue<BTC::UINT16_T>("bla") << std::endl;
+    BTC::SIZE_T len;
+    doubarr = tag1->getArray<BTC::DOUBLE_T>("doubarr",len);
     for (int i=0; i<len; ++i) std::cout << doubarr[i] << ' ';
     std::cout << std::endl;
-    BTC::DOUBLE_T doub = test1->getValue<BTC::DOUBLE_T>("double");
-    std::cout << doub << std::endl;
+//    try {
+        BTC::DOUBLE_T doub = test1->getValue<BTC::DOUBLE_T>("double");
+        std::cout << doub << std::endl;
+//    } catch (tag_not_found_error e) {
+//        std::cout << e.what() << std::endl;
+//    }
 
     return 0;
 }
