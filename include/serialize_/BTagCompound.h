@@ -85,7 +85,10 @@ public:
         // Search for tag in tagmap
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists already -> set to new value
             datalist[tagmap[pos].position].data = val;
@@ -405,7 +408,10 @@ public:
     ptr_::SharedConstObjPtr<BT> getTag(const STRING_T& tag) const {
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
             // TODO Add a runtime typecheck here! (Flo)
@@ -421,7 +427,10 @@ public:
     ptr_::SharedObjPtr<BT> getTag(const STRING_T& tag) {
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
             // TODO Add a runtime typecheck here! (Flo)
@@ -439,7 +448,10 @@ public:
     const T& getValue(const STRING_T& tag) const {
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
             //if (datalist[tagmap[pos].position].data->getTypeID() == DataTypeID::UINT8) {
@@ -458,7 +470,10 @@ public:
     T& getValue(const STRING_T& tag) {
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
             //if (datalist[tagmap[pos].position].data->getTypeID() == DataTypeID::UINT8) {
@@ -478,7 +493,10 @@ public:
     const T* getArray(const STRING_T& tag, SIZE_T& len) const {
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
             //if (datalist[tagmap[pos].position].data->getTypeID() == DataTypeID::value) {
@@ -499,7 +517,10 @@ public:
     T* getArray(const STRING_T& tag, SIZE_T& len) {
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
         //    if (datalist[tagmap[pos].position].data->getTypeID() == DataType<T*>::value) {
@@ -521,7 +542,10 @@ public:
     T* retrieveArray(const STRING_T& tag, SIZE_T& len) {
         BTagCompoundEntry searchtag;
         searchtag.tag = tag;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(tag) == 0)) {
             // Tag exists
         //    if (datalist[tagmap[pos].position].data->getTypeID() == DataType<T*>::value) {
@@ -555,7 +579,10 @@ public:
     UINT8_T getTypeID(const STRING_T& key) const {
         BTagCompoundEntry searchtag;
         searchtag.tag = key;
-        SIZE_T pos = container_::search_lower(tagmap,searchtag);
+        SIZE_T pos = 0;
+        if (tagmap.size() > 1) {
+            pos = container_::search_lower(tagmap,searchtag);
+        }
         if ((pos < tagmap.size()) && (tagmap[pos].tag.compare(key) == 0)) {
             return(datalist[tagmap[pos].position].data->getTypeID());
         } else {
