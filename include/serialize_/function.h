@@ -1,5 +1,5 @@
-#ifndef SERIALIZE_SERIALIZEHELPER_H
-#define SERIALIZE_SERIALIZEHELPER_H
+#ifndef BTC_SERIALIZE_FUNCTION_H
+#define BTC_SERIALIZE_FUNCTION_H
 
 #include <istream>
 #include <ostream>

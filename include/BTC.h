@@ -3,8 +3,8 @@
 
 #include "ptr_/SharedObjPtr.h"
 #include "ptr_/SharedConstObjPtr.h"
-#include "serialize_/DataType.h"
-#include "serialize_/BTagCompound.h"
+#include "serialize_/data_type.h"
+#include "serialize_/btc.h"
 
 namespace BTC {
 

@@ -1,33 +1,557 @@
-#ifndef BTC_BTAGCOMPOUND_H
-#define BTC_BTAGCOMPOUND_H
+#ifndef BTC_SERIALIZE_BTC_H
+#define BTC_SERIALIZE_BTC_H
 
 #include "container_/ArrayList.h"
 #include "container_/algorithm.h"
 #include "ptr_/SharedObjPtr.h"
 
-#include "IBTagBase.h"
-#include "BTagByte.h"
-#include "BTagShort.h"
-#include "BTagInt.h"
-#include "BTagLong.h"
-#include "BTagFloat.h"
-#include "BTagDouble.h"
-#include "BTagString.h"
-#include "BTagByteArr.h"
-#include "BTagShortArr.h"
-#include "BTagIntArr.h"
-#include "BTagLongArr.h"
-#include "BTagFloatArr.h"
-#include "BTagDoubleArr.h"
-#include "BTagStringArr.h"
-
-#include "BTagCompoundEntry.h"
-#include "BTagCompoundDataEntry.h"
-
+#include "function.h"
+#include "data_type.h"
 #include "exception.h"
 
 namespace BTC {
 namespace serialize_ {
+
+
+// Logical data types
+
+// Interface for BTag data objects.
+class IBTagBase {
+
+  public:
+    virtual ~IBTagBase() {}
+    // Returns the type information.
+    virtual unsigned char getTypeID() const = 0;
+    // Serialize the BTag to stream.
+    virtual void serialize(std::ostream& os) const = 0;
+    // Deserialize the BTag from stream.
+    virtual void deserialize(std::istream& is) = 0;
+    // Human readable print of the BTag
+    virtual std::ostream& print(std::ostream& os, unsigned char increment) const = 0;
+};
+
+template<typename T>
+class BTagVal : public IBTagBase {
+    
+  public:
+    T data;
+
+    BTagVal() : data() {}
+    BTagVal(const BTagVal<T>& bt) : data(0) {}
+#ifdef ASSERT_C11
+    BTagVal(BTagVal<T>&& bt) : data(bt.data) {}
+#endif
+    BTagVal(const T& value) : data(value) {}
+};
+
+template<typename T>
+class BTagByte : public BTagVal<T> {
+
+  public:
+    BTagByte() : BTagVal<T>() {}
+    BTagByte(const BTagByte<T>& bt) : BTagVal<T>(bt) {}
+    BTagByte(const T& value) : BTagVal<T>(value) {}
+
+    unsigned char getTypeID() const {
+        return DataTypeID::UINT8;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeByte(os,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        this->data = deserializeByte(is);
+    }
+
+    std::ostream& print(std::ostream& os, unsigned char increment) const {
+        os << "b{" << this->data << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagShort : public BTagVal<T> {
+
+  public:
+    BTagShort() : BTagVal<T>() {}
+    BTagShort(const BTagShort<T>& bt) : BTagVal<T>(bt) {}
+    BTagShort(const T& value) : BTagVal<T>(value) {}
+
+    unsigned char getTypeID() const {
+        return DataTypeID::UINT16;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeShort(os,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        this->data = deserializeShort(is);
+    }
+
+    std::ostream& print(std::ostream& os, unsigned char increment) const {
+        os << "s{" << this->data << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagInt : public BTagVal<T> {
+
+  public:
+    BTagInt() : BTagVal<T>() {}
+    BTagInt(const BTagInt<T>& bt) : BTagVal<T>(bt) {}
+    BTagInt(const T& value) : BTagVal<T>(value) {}
+
+    unsigned char getTypeID() const {
+        return DataTypeID::UINT32;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeInt(os,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        this->data = deserializeInt(is);
+    }
+
+    std::ostream& print(std::ostream& os, unsigned char increment) const {
+        os << "i{" << this->data << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagLong : public BTagVal<T> {
+
+  public:
+    BTagLong() : BTagVal<T>() {}
+    BTagLong(const BTagLong<T>& bt) : BTagVal<T>(bt) {}
+    BTagLong(const T& value) : BTagVal<T>(value) {}
+
+    unsigned char getTypeID() const {
+        return DataTypeID::UINT64;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeLong(os,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        this->data = deserializeLong(is);
+    }
+
+    std::ostream& print(std::ostream& os, unsigned char increment) const {
+        os << "l{" << this->data << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagFloat : public BTagVal<T> {
+
+  public:
+    BTagFloat() : BTagVal<T>() {}
+    BTagFloat(const BTagFloat& bt) : BTagVal<T>(bt) {}
+    BTagFloat(const T& value) : BTagVal<T>(value) {}
+
+    unsigned char getTypeID() const {
+        return DataTypeID::FLOAT;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeFloat(os,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        this->data = deserializeFloat(is);
+    }
+
+    std::ostream& print(std::ostream& os, unsigned char increment) const {
+        os << "f{" << this->data << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagDouble : public BTagVal<T> {
+
+  public:
+    BTagDouble() : BTagVal<T>() {}
+    BTagDouble(const BTagDouble& bt) : BTagVal<T>(bt) {}
+    BTagDouble(const T& value) : BTagVal<T>(value) {}
+
+    unsigned char getTypeID() const {
+        return DataTypeID::DOUBLE;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeDouble(os,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        this->data = deserializeDouble(is);
+    }
+
+    std::ostream& print(std::ostream& os, unsigned char increment) const {
+        os << "d{" << this->data << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagString : public BTagVal<T> {
+
+  public:
+    BTagString() : BTagVal<T>() {}
+    BTagString(const BTagString& bt) : BTagVal<T>(bt) {}
+    BTagString(const T& value) : BTagVal<T>(value) {}
+
+    unsigned char getTypeID() const {
+        return DataTypeID::STRING;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeString(os,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        this->data = deserializeString(is);
+    }
+
+    std::ostream& print(std::ostream& os, unsigned char increment) const {
+        os << "st{\"" << this->data << "\"}";
+        return os;
+    }
+};
+
+template<typename T>
+class BTagArr : public IBTagBase {
+    
+  public:
+    T* data;
+    SIZE_T len;
+    bool owner;
+
+    BTagArr() : data(0), len(0), owner(false) {}
+
+    BTagArr(const BTagArr<T>& bt) 
+            : data(0), len(bt.len), owner(bt.owner) {
+        if(owner) {
+            // Copy array
+            data = new T[len];
+            for(SIZE_T i=0; i<len; ++i) {
+                data[i] = bt.data[i];
+            }
+        } else {
+            data = bt.data;
+        }
+    }
+
+#ifdef ASSERT_C11
+    BTagArr(BTagArr<T>&& bt)
+            : data(bt.data), len(bt.len), owner(bt.owner) {
+        bt.data = 0;
+        bt.owner = false;
+    }
+#endif
+
+    BTagArr(T* value, const SIZE_T& length, bool ownership) 
+            : data(value), len(length), owner(ownership) {
+    }
+
+    ~BTagArr() {
+        if(owner) {
+            delete[] data;
+        }
+    }
+};
+
+template<typename T>
+class BTagByteArr : public BTagArr<T> {
+
+  public:
+    BTagByteArr() : BTagArr<T>() {}
+    BTagByteArr(const BTagByteArr<T>& bt) : BTagArr<T>(bt) {}
+#ifdef ASSERT_C11
+    BTagByteArr(BTagByteArr<T>&& bt) : BTagArr<T>(bt) {}
+#endif
+    BTagByteArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
+
+    UINT8_T getTypeID() const {
+        return DataTypeID::UINT8_ARR;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeByteArray(os,this->len,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        if(this->owner) {
+            delete[] this->data;
+        }
+        this->data = deserializeByteArray<T>(is,this->len);
+        this->owner = true;
+    }
+
+    std::ostream& print(std::ostream& os, UINT8_T increment) const {
+        os << "ba{len=" << this->len << ",own=" << this->owner << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagShortArr : public BTagArr<T> {
+
+  public:
+    BTagShortArr() : BTagArr<T>() {}
+
+    BTagShortArr(const BTagShortArr<T>& bt) : BTagArr<T>(bt) {}
+
+#ifdef ASSERT_C11
+    BTagShortArr(BTagShortArr<T>&& bt) : BTagArr<T>(bt) {}
+#endif
+
+    BTagShortArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
+
+    UINT8_T getTypeID() const {
+        return DataTypeID::UINT16_ARR;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeShortArray(os,this->len,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        if(this->owner) {
+            delete[] this->data;
+        }
+        this->data = deserializeShortArray<T>(is,this->len);
+        this->owner = true;
+    }
+
+    std::ostream& print(std::ostream& os, UINT8_T increment) const {
+        os << "sa{len=" << this->len << ",own=" << this->owner << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagIntArr : public BTagArr<T> {
+
+  public:
+    BTagIntArr() : BTagArr<T>() {}
+
+    BTagIntArr(const BTagIntArr<T>& bt) : BTagArr<T>(bt) {}
+
+#ifdef ASSERT_C11
+    BTagIntArr(BTagIntArr<T>&& bt) : BTagArr<T>(bt) {}
+#endif
+
+    BTagIntArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
+
+    UINT8_T getTypeID() const {
+        return DataTypeID::UINT32_ARR;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeIntArray(os,this->len,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        if(this->owner) {
+            delete[] this->data;
+        }
+        this->data = deserializeIntArray<T>(is,this->len);
+        this->owner = true;
+    }
+
+    std::ostream& print(std::ostream& os, UINT8_T increment) const {
+        os << "ia{len=" << this->len << ",own=" << this->owner << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagLongArr : public BTagArr<T> {
+
+  public:
+    BTagLongArr() : BTagArr<T>() {}
+
+    BTagLongArr(const BTagLongArr<T>& bt) : BTagArr<T>(bt) {}
+
+#ifdef ASSERT_C11
+    BTagLongArr(BTagLongArr<T>&& bt) : BTagArr<T>(bt) {}
+#endif
+
+    BTagLongArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
+
+    UINT8_T getTypeID() const {
+        return DataTypeID::UINT64_ARR;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeLongArray(os,this->len,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        if(this->owner) {
+            delete[] this->data;
+        }
+        this->data = deserializeLongArray<T>(is,this->len);
+        this->owner = true;
+    }
+
+    std::ostream& print(std::ostream& os, UINT8_T increment) const {
+        os << "la{len=" << this->len << ",own=" << this->owner << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagFloatArr : public BTagArr<T> {
+
+  public:
+    BTagFloatArr() : BTagArr<T>() {}
+
+    BTagFloatArr(const BTagFloatArr& bt) : BTagArr<T>(bt) {}
+
+#ifdef ASSERT_C11
+    BTagFloatArr(BTagFloatArr&& bt) : BTagArr<T>(bt) {}
+#endif
+
+    BTagFloatArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
+
+    UINT8_T getTypeID() const {
+        return DataTypeID::FLOAT_ARR;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeFloatArray(os,this->len,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        if(this->owner) {
+            delete[] this->data;
+        }
+        this->data = deserializeFloatArray(is,this->len);
+        this->owner = true;
+    }
+
+    std::ostream& print(std::ostream& os, UINT8_T increment) const {
+        os << "fa{len=" << this->len << ",own=" << this->owner << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagDoubleArr : public BTagArr<T> {
+
+  public:
+    BTagDoubleArr() : BTagArr<T>() {}
+
+    BTagDoubleArr(const BTagDoubleArr& bt) : BTagArr<T>(bt) {}
+
+#ifdef ASSERT_C11
+    BTagDoubleArr(BTagDoubleArr&& bt) : BTagArr<T>(bt) {}
+#endif
+
+    BTagDoubleArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
+
+    UINT8_T getTypeID() const {
+        return DataTypeID::DOUBLE_ARR;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeDoubleArray(os,this->len,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        if(this->owner) {
+            delete[] this->data;
+        }
+        this->data = deserializeDoubleArray(is,this->len);
+        this->owner = true;
+    }
+
+    std::ostream& print(std::ostream& os, UINT8_T increment) const {
+        os << "da{len=" << this->len << ",own=" << this->owner << '}';
+        return os;
+    }
+};
+
+template<typename T>
+class BTagStringArr : public BTagArr<T> {
+
+  public:
+    BTagStringArr() : BTagArr<T>() {}
+
+    BTagStringArr(const BTagStringArr& bt) : BTagArr<T>(bt) {}
+
+#ifdef ASSERT_C11
+    BTagStringArr(BTagStringArr&& bt) : BTagArr<T>(bt) {}
+#endif
+
+    BTagStringArr(T* value, const SIZE_T& length, bool ownership) 
+            : BTagArr<T>(value,length,ownership) {}
+
+    UINT8_T getTypeID() const {
+        return DataTypeID::STRING_ARR;
+    }
+
+    void serialize(std::ostream& os) const {
+        serializeStringArray(os,this->len,this->data);
+    }
+
+    void deserialize(std::istream& is) {
+        if(this->owner) {
+            delete[] this->data;
+        }
+        this->data = deserializeStringArray(is,this->len);
+        this->owner = true;
+    }
+
+    std::ostream& print(std::ostream& os, UINT8_T increment) const {
+        os << "sta{len=" << this->len << ",own=" << this->owner << '}';
+        return os;
+    }
+};
+
+
+// BTagCompound
+
+class BTCTagEntry {
+
+  public:
+    STRING_T tag;
+    size_t position;
+
+    bool operator<(const BTCTagEntry& entry) const {
+        return(tag.compare(entry.tag) < 0);
+    }
+};
+
+class BTCDataEntry {
+
+  public:
+    STRING_T tag;
+    ptr_::SharedObjPtr<IBTagBase> data;
+
+    BTCDataEntry()
+            : tag(), data() {
+    }
+
+    BTCDataEntry(const STRING_T& t, ptr_::SharedObjPtr<IBTagBase> d)
+            : tag(t), data(d) {
+    }
+};
 
 // A binary list that maps tags to data.
 // The user is responsible for the actual type of his data.
@@ -44,8 +568,8 @@ namespace serialize_ {
 class BTagCompound : public IBTagBase {
 
     // Sorted array to find tags using binary search
-    container_::ArrayList<BTagCompoundEntry> tagmap;
-    container_::ArrayList<BTagCompoundDataEntry> datalist;
+    container_::ArrayList<BTCTagEntry> tagmap;
+    container_::ArrayList<BTCDataEntry> datalist;
 
 public:
     BTagCompound() : tagmap(), datalist() {}
@@ -92,7 +616,7 @@ public:
         // TODO Add a runtime typecheck here! (Flo)
         ptr_::SharedObjPtr<IBTagBase> val = ptr_::SharedObjPtr<IBTagBase>::reinterpretCast(value);
         // Search for tag in tagmap
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -105,7 +629,7 @@ public:
             // Tag does not exist -> add to list
             searchtag.position = datalist.size();
             tagmap.add(searchtag);
-            datalist.add(BTagCompoundDataEntry(searchtag.tag, val));
+            datalist.add(BTCDataEntry(searchtag.tag, val));
             container_::sort(tagmap);
         }
     }
@@ -415,7 +939,7 @@ public:
     // BT needs to inherit from IBTagBase.
     template<typename BT>
     ptr_::SharedConstObjPtr<BT> getTag(const STRING_T& tag) const {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -435,7 +959,7 @@ public:
     // BT needs to inherit IBTagBase.
     template<typename BT>
     ptr_::SharedObjPtr<BT> getTag(const STRING_T& tag) {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -452,7 +976,7 @@ public:
 
     template<typename T>
     const T& getValue(const STRING_T& tag) const {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -472,7 +996,7 @@ public:
 
     template<typename T>
     T& getValue(const STRING_T& tag) {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -493,7 +1017,7 @@ public:
     // Gets the pointer without claiming ownership.
     template<typename T>
     const T* getArray(const STRING_T& tag, SIZE_T& len) const {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -516,7 +1040,7 @@ public:
 
     template<typename T>
     T* getArray(const STRING_T& tag, SIZE_T& len) {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -540,7 +1064,7 @@ public:
     // Gets the pointer, claims ownership.
     template<typename T>
     T* retrieveArray(const STRING_T& tag, SIZE_T& len) {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = tag;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -576,7 +1100,7 @@ public:
     }
 
     UINT8_T getTypeID(const STRING_T& key) const {
-        BTagCompoundEntry searchtag;
+        BTCTagEntry searchtag;
         searchtag.tag = key;
         SIZE_T pos = 0;
         if (tagmap.size() > 1) {
@@ -603,7 +1127,7 @@ public:
         UINT64_T data_size = deserializeIntVar<UINT64_T>(is);
         UINT8_T type_temp;
         for(SIZE_T i=0; i<data_size; ++i) {
-            datalist.add(BTagCompoundDataEntry());
+            datalist.add(BTCDataEntry());
             // tag
             datalist[datalist.size()-1].tag = deserializeString8(is);
             // type
@@ -684,7 +1208,7 @@ public:
                         );
             }
             datalist[datalist.size()-1].data->deserialize(is);
-            tagmap.add(BTagCompoundEntry());
+            tagmap.add(BTCTagEntry());
             tagmap[tagmap.size()-1].tag = datalist[datalist.size()-1].tag;
             tagmap[tagmap.size()-1].position = datalist.size()-1;
         }
