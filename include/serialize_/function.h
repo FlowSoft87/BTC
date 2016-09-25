@@ -218,22 +218,22 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
     exp += 1023;
     // Special cases
     if (val == 0) {
-        mant = 0.5d;
+        mant = 0.5;
         exp = 2047;
     } else if(isinf(val)) {
         // Handle inf case
-        mant = 0.75d;
+        mant = 0.75;
         exp = 2047;
     } else if(isnan(val)) {
         // Handle quiet NaN case
-        mant = 0.875d;
+        mant = 0.875;
         exp = 2047;
     }
     // Write exponent
     data += (UINT64_T(exp))*4503599627370496ul;  // Set bits 52-62: 2^52
     // Write mantissa
-    mant -= 0.5d;  // Subtract hidden bit
-    data += UINT64_T(mant*9007199254740992.d);  // Set bits 0-51: (0 <= mant < 0.5)
+    mant -= 0.5;  // Subtract hidden bit
+    data += UINT64_T(mant*9007199254740992.);  // Set bits 0-51: (0 <= mant < 0.5)
     serializeLong(os,data);
 }
 
@@ -242,7 +242,7 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
  */
 DOUBLE_T deserializeDouble(std::istream& is) {
     UINT64_T data = deserializeLong(is);
-    DOUBLE_T val = 0.5d;
+    DOUBLE_T val = 0.5;
     // Get sign
     bool s = data/9223372036854775808ul;
     data %= 9223372036854775808ul;
@@ -250,16 +250,16 @@ DOUBLE_T deserializeDouble(std::istream& is) {
     int exp = data/4503599627370496ul;
     data %= 4503599627370496ul;
     // Get mantissa
-    val += (DOUBLE_T(data))/9007199254740992.d;
-    if(val == 0.5d && exp == 2047) {
+    val += (DOUBLE_T(data))/9007199254740992.;
+    if(val == 0.5 && exp == 2047) {
         // Handle zero case
         if(s) {
-            val = -0.d;
+            val = -0.;
         } else {
-            val = 0.d;
+            val = 0.;
         }
         return val;
-    } else if(val == 0.75d && exp == 2047) {
+    } else if(val == 0.75 && exp == 2047) {
         // Handle inf case
         if(s) {
             val = -std::numeric_limits<DOUBLE_T>::infinity();
@@ -267,7 +267,7 @@ DOUBLE_T deserializeDouble(std::istream& is) {
             val = std::numeric_limits<DOUBLE_T>::infinity();
         }
         return val;
-    } else if(val == 0.875d && exp == 2047) {
+    } else if(val == 0.875 && exp == 2047) {
         // Handle quiet NaN case
         if (s) {
             val = -nan("");

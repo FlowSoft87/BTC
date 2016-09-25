@@ -21,7 +21,7 @@ int main() {
     // Set values in the inner tag.
     tag->setString("a_string",std::string("some string"));
     double* doubarr = new double[20];
-    for (int i=0; i<20; ++i) {
+    for (size_t i=0; i<20; ++i) {
         doubarr[i] = i*0.13413723472374e-15;
         std::cout << doubarr[i] << ' ';
     }
@@ -46,7 +46,7 @@ int main() {
     std::cout << tag1->getValue<BTC::UINT16_T>("bla") << std::endl;
     BTC::SIZE_T len;
     doubarr = tag1->getArray<BTC::DOUBLE_T>("doubarr",len);
-    for (int i=0; i<len; ++i) std::cout << doubarr[i] << ' ';
+    for (size_t i=0; i<len; ++i) std::cout << doubarr[i] << ' ';
     std::cout << std::endl;
 //    try {
         BTC::DOUBLE_T doub = test1->getValue<BTC::DOUBLE_T>("double");
