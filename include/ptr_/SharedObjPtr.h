@@ -68,8 +68,7 @@ class SharedObjPtr {
         }
         data = ptr.data;
         ++(data->counter);
-
-		return *this;
+        return *this;
     }
 
     T& operator*() const {
