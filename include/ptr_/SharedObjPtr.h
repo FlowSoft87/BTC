@@ -34,7 +34,7 @@ class SharedObjPtr {
         ++(data->counter);
     }
 
-    SharedObjPtr(T* d) : data(0) {
+    explicit SharedObjPtr(T* d) : data(0) {
         data = new ObjPtrData<T>();
         data->data = d;
         ++(data->counter);
@@ -68,6 +68,8 @@ class SharedObjPtr {
         }
         data = ptr.data;
         ++(data->counter);
+
+		return *this;
     }
 
     T& operator*() const {

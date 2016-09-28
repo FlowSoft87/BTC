@@ -12,7 +12,7 @@ int main() {
     test->setInt("integer",1);
     test->setFloat("float",1.4f);
     test->setDouble("double",1.3452e-10);
-    test->setDouble("infval",-1./0.);
+    test->setDouble("infval",INFINITY);
     test->setFloat("nanval",-nan(""));
     // Create another tag.
     BTC::BTagCompoundPtr tag(new BTC::BTagCompound());
@@ -46,7 +46,7 @@ int main() {
     std::cout << tag1->getValue<BTC::UINT16_T>("bla") << std::endl;
     BTC::SIZE_T len;
     doubarr = tag1->getArray<BTC::DOUBLE_T>("doubarr",len);
-    for (int i=0; i<len; ++i) std::cout << doubarr[i] << ' ';
+    for (size_t i=0; i<len; ++i) std::cout << doubarr[i] << ' ';
     std::cout << std::endl;
 //    try {
         BTC::DOUBLE_T doub = test1->getValue<BTC::DOUBLE_T>("double");
