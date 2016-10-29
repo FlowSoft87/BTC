@@ -134,11 +134,11 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
     if (val == 0) {
         mant = 0.5f;
         exp = 255;
-    } else if(isinf(val)) {
+    } else if(std::isinf(val)) {
         // Handle inf case
         mant = 0.75f;
         exp = 255;
-    } else if(isnan(val)) {
+    } else if(std::isnan(val)) {
         // Handle quiet NaN case
         mant = 0.875f;
         exp = 255;
@@ -220,11 +220,11 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
     if (val == 0) {
         mant = 0.5;
         exp = 2047;
-    } else if(isinf(val)) {
+    } else if(std::isinf(val)) {
         // Handle inf case
         mant = 0.75;
         exp = 2047;
-    } else if(isnan(val)) {
+    } else if(std::isnan(val)) {
         // Handle quiet NaN case
         mant = 0.875;
         exp = 2047;
