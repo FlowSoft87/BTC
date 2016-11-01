@@ -1,3 +1,6 @@
+// TODO Change the serialization of integers: Check for endian 
+// and point to function that does nothing if endian is okay. (Flo)
+
 #ifndef BTC_SERIALIZE_FUNCTION_H
 #define BTC_SERIALIZE_FUNCTION_H
 
@@ -6,8 +9,140 @@
 #include <limits>
 #include <cmath>
 
+#include "data_type.h"
+
 namespace BTC {
 namespace serialize_ {
+
+// The majority of desktop computers use little endian while ARM (mobile market) 
+// seems to use big endian.
+// We choose to focus on the server architecture and desktop PCs and choose the
+// little endian standard for the internal format of integers!
+
+/**
+ * Class that converts host to little endian and back.
+ * To map between the two formats it uses a fixed number whose
+ * representation in memory is analyzed dynamically.
+ * In case of an underlying little-endian architecture the
+ * conversion methods do nothing.
+ * Otherwise, the byte order is manipulated accordingly.
+ * The byte order is checked only once at creation of an
+ * object of this class and for later use only a single
+ * boolean needs to be checked.
+ * This makes the splitting of integers into bytes in the right
+ * order obsolete.
+ */
+class ByteOrder {
+
+    union {
+        UINT16_T val;
+        UINT8_T bytes[2];
+    } short_map;
+    union {
+        UINT32_T val;
+        UINT8_T bytes[4];
+    } int_map;
+    union {
+        UINT64_T val;
+        UINT8_T bytes[8];
+    } long_map;
+    bool littleEndian;
+
+public:
+    ByteOrder() : short_map(), int_map(), long_map(), littleEndian(false) {
+        short_map.val = 0x0100;
+        int_map.val = 0x03020100;
+        long_map.val = 0x0706050403020100;
+        if (int_map.bytes[0] == 0 &&
+            int_map.bytes[1] == 1 &&
+            int_map.bytes[2] == 2 &&
+            int_map.bytes[3] == 3) {
+            littleEndian = true;
+        }
+    }
+
+    bool isLittleEndian() const {
+        return littleEndian;
+    }
+
+    void toLittleEndian(UINT16_T& val) const {
+        if (!littleEndian) {
+            UINT16_T temp = val;
+            UINT8_T* arr = reinterpret_cast<UINT8_T*>(&val);
+            UINT8_T* arr_temp = reinterpret_cast<UINT8_T*>(&temp);
+            arr[short_map.bytes[0]] = arr_temp[0];
+            arr[short_map.bytes[1]] = arr_temp[1];
+        }
+    }
+
+    void toLittleEndian(UINT32_T& val) const {
+        if (!littleEndian) {
+            UINT32_T temp = val;
+            UINT8_T* arr = reinterpret_cast<UINT8_T*>(&val);
+            UINT8_T* arr_temp = reinterpret_cast<UINT8_T*>(&temp);
+            arr[int_map.bytes[0]] = arr_temp[0];
+            arr[int_map.bytes[1]] = arr_temp[1];
+            arr[int_map.bytes[2]] = arr_temp[2];
+            arr[int_map.bytes[3]] = arr_temp[3];
+        }
+    }
+
+    void toLittleEndian(UINT64_T& val) const {
+        if (!littleEndian) {
+            UINT64_T temp = val;
+            UINT8_T* arr = reinterpret_cast<UINT8_T*>(&val);
+            UINT8_T* arr_temp = reinterpret_cast<UINT8_T*>(&temp);
+            arr[long_map.bytes[0]] = arr_temp[0];
+            arr[long_map.bytes[1]] = arr_temp[1];
+            arr[long_map.bytes[2]] = arr_temp[2];
+            arr[long_map.bytes[3]] = arr_temp[3];
+            arr[long_map.bytes[4]] = arr_temp[4];
+            arr[long_map.bytes[5]] = arr_temp[5];
+            arr[long_map.bytes[6]] = arr_temp[6];
+            arr[long_map.bytes[7]] = arr_temp[7];
+        }
+    }
+
+    void toHostEndian(UINT16_T& val) const {
+        if (!littleEndian) {
+            UINT8_T* arr = reinterpret_cast<UINT8_T*>(&val);
+            UINT8_T temp = arr[short_map.bytes[1]];
+            arr[0] = arr[short_map.bytes[0]];
+            arr[1] = temp;
+        }
+    }
+
+    void toHostEndian(UINT32_T& val) const {
+        if (!littleEndian) {
+            UINT32_T temp = val;
+            UINT8_T* arr = reinterpret_cast<UINT8_T*>(&val);
+            UINT8_T* arr_temp = reinterpret_cast<UINT8_T*>(&temp);
+            arr[0] = arr_temp[int_map.bytes[0]];
+            arr[1] = arr_temp[int_map.bytes[1]];
+            arr[2] = arr_temp[int_map.bytes[2]];
+            arr[3] = arr_temp[int_map.bytes[3]];
+        }
+    }
+
+    void toHostEndian(UINT64_T& val) const {
+        if (!littleEndian) {
+            UINT64_T temp = val;
+            UINT8_T* arr = reinterpret_cast<UINT8_T*>(&val);
+            UINT8_T* arr_temp = reinterpret_cast<UINT8_T*>(&temp);
+            arr[0] = arr_temp[long_map.bytes[0]];
+            arr[1] = arr_temp[long_map.bytes[1]];
+            arr[2] = arr_temp[long_map.bytes[2]];
+            arr[3] = arr_temp[long_map.bytes[3]];
+            arr[4] = arr_temp[long_map.bytes[4]];
+            arr[5] = arr_temp[long_map.bytes[5]];
+            arr[6] = arr_temp[long_map.bytes[6]];
+            arr[7] = arr_temp[long_map.bytes[7]];
+        }
+    }
+
+};
+
+static const ByteOrder byte_order;
 
 /**
  * Serialize a single byte.
@@ -28,16 +163,18 @@ UINT8_T deserializeByte(std::istream& i) {
  * Integer has to fulfill (s < 2^16) and have integer division and
  * modulo operations defined.
  */
-template<typename UINT16_T>
+//template<typename UINT16_T>
 void serializeShort(std::ostream& o, UINT16_T s) {
-    serializeByte(o,s/256u);
-    serializeByte(o,s%256u);
+    byte_order.toLittleEndian(s);
+    o.write(reinterpret_cast<const char*>(&s),2);
 }
 
 UINT16_T deserializeShort(std::istream& i) {
-    UINT16_T data = 0;
-    data += (UINT16_T(deserializeByte(i)))*256u;
-    data += deserializeByte(i);
+    UINT16_T data;
+    i.read(reinterpret_cast<char*>(&data),2);
+    //data += (UINT16_T(deserializeByte(i)))*256u;
+    //data += deserializeByte(i);
+    byte_order.toHostEndian(data);
     return(data);
 }
 
@@ -46,18 +183,22 @@ UINT16_T deserializeShort(std::istream& i) {
  * Integer has to fulfill (s < 2^32) and have integer division and
  * modulo operations defined.
  */
-template<typename UINT32_T>
-void serializeInt(std::ostream& o, const UINT32_T& i) {
-    UINT16_T data = i/65536u;
-    serializeShort(o,data);
-    data = i%65536u;
-    serializeShort(o,data);
+//template<typename UINT32_T>
+void serializeInt(std::ostream& o, UINT32_T i) {
+    byte_order.toLittleEndian(i);
+    o.write(reinterpret_cast<const char*>(&i),4);
+    //UINT16_T data = i/65536u;
+    //serializeShort(o,data);
+    //data = i%65536u;
+    //serializeShort(o,data);
 }
 
 UINT32_T deserializeInt(std::istream& i) {
-    UINT32_T data = 0;
-    data += (UINT32_T(deserializeShort(i)))*65536u;
-    data += deserializeShort(i);
+    UINT32_T data;
+    i.read(reinterpret_cast<char*>(&data),4);
+    byte_order.toHostEndian(data);
+    //data += (UINT32_T(deserializeShort(i)))*65536u;
+    //data += deserializeShort(i);
     return(data);
 }
 
@@ -66,18 +207,22 @@ UINT32_T deserializeInt(std::istream& i) {
  * Integer has to fulfill (s < 2^64) and have integer division and
  * modulo operations defined.
  */
-template<typename UINT64_T>
-void serializeLong(std::ostream& o, const UINT64_T& i) {
-    UINT32_T data = i/4294967296u;
-    serializeInt(o,data);
-    data = i%4294967296u;
-    serializeInt(o,data);
+//template<typename UINT64_T>
+void serializeLong(std::ostream& o, UINT64_T i) {
+    byte_order.toLittleEndian(i);
+    o.write(reinterpret_cast<const char*>(&i),8);
+    //UINT32_T data = i/4294967296u;
+    //serializeInt(o,data);
+    //data = i%4294967296u;
+    //serializeInt(o,data);
 }
 
 UINT64_T deserializeLong(std::istream& i) {
-    UINT64_T data = 0;
-    data += (UINT64_T(deserializeInt(i)))*4294967296u;
-    data += deserializeInt(i);
+    UINT64_T data;
+    i.read(reinterpret_cast<char*>(&data),8);
+    byte_order.toHostEndian(data);
+    //data += (UINT64_T(deserializeInt(i)))*4294967296u;
+    //data += deserializeInt(i);
     return(data);
 }
 
@@ -111,6 +256,21 @@ T deserializeIntVar(std::istream& i) {
     else if(type == 1) return(deserializeShort(i));
     else if(type == 2) return(deserializeInt(i));
     else return(deserializeLong(i));
+}
+
+/**
+ * Get the byte-size for an int variable with unspecified size.
+ */
+template<typename T>
+SIZE_T getIntVarByteSize(const T& val) {
+    if(val <= 256u) {
+        return 2;
+    } else if((val > 256u) && (val <= 65536u)) {
+        return 3;
+    } else if((val > 65536u) && (val <= 4294967296u)) {
+        return 5;
+    }
+    return 9;
 }
 
 /**
@@ -416,6 +576,15 @@ STRING_T deserializeString(std::istream& i) {
     } else {
         return(STRING_T());
     }
+}
+
+/**
+ * Get bytesize of a string with unspecified size.
+ */
+SIZE_T getStringByteSize(const STRING_T& s) {
+    SIZE_T bytesize = s.size();
+    bytesize += getIntVarByteSize(bytesize);
+    return bytesize;
 }
 
 template<typename T>

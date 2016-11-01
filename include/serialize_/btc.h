@@ -22,6 +22,8 @@ class IBTagBase {
     virtual ~IBTagBase() {}
     // Returns the type information.
     virtual unsigned char getTypeID() const = 0;
+    // Get byte-size in stream.
+    virtual SIZE_T getByteSize() const = 0;
     // Serialize the BTag to stream.
     virtual void serialize(std::ostream& os) const = 0;
     // Deserialize the BTag from stream.
@@ -56,6 +58,10 @@ class BTagByte : public BTagVal<T> {
         return DataTypeID::UINT8;
     }
 
+    SIZE_T getByteSize() const {
+        return 1;
+    }
+
     void serialize(std::ostream& os) const {
         serializeByte(os,this->data);
     }
@@ -80,6 +86,10 @@ class BTagShort : public BTagVal<T> {
 
     unsigned char getTypeID() const {
         return DataTypeID::UINT16;
+    }
+
+    SIZE_T getByteSize() const {
+        return 2;
     }
 
     void serialize(std::ostream& os) const {
@@ -108,6 +118,10 @@ class BTagInt : public BTagVal<T> {
         return DataTypeID::UINT32;
     }
 
+    SIZE_T getByteSize() const {
+        return 4;
+    }
+
     void serialize(std::ostream& os) const {
         serializeInt(os,this->data);
     }
@@ -132,6 +146,10 @@ class BTagLong : public BTagVal<T> {
 
     unsigned char getTypeID() const {
         return DataTypeID::UINT64;
+    }
+
+    SIZE_T getByteSize() const {
+        return 8;
     }
 
     void serialize(std::ostream& os) const {
@@ -160,6 +178,10 @@ class BTagFloat : public BTagVal<T> {
         return DataTypeID::FLOAT;
     }
 
+    SIZE_T getByteSize() const {
+        return 4;
+    }
+
     void serialize(std::ostream& os) const {
         serializeFloat(os,this->data);
     }
@@ -186,6 +208,10 @@ class BTagDouble : public BTagVal<T> {
         return DataTypeID::DOUBLE;
     }
 
+    SIZE_T getByteSize() const {
+        return 8;
+    }
+
     void serialize(std::ostream& os) const {
         serializeDouble(os,this->data);
     }
@@ -210,6 +236,10 @@ class BTagString : public BTagVal<T> {
 
     unsigned char getTypeID() const {
         return DataTypeID::STRING;
+    }
+
+    SIZE_T getByteSize() const {
+        return getStringByteSize(this->data);
     }
 
     void serialize(std::ostream& os) const {
@@ -284,6 +314,14 @@ class BTagByteArr : public BTagArr<T> {
         return DataTypeID::UINT8_ARR;
     }
 
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T bytesize = getIntVarByteSize(this->len);
+        // Bytesize of data
+        bytesize += this->len;
+        return bytesize;
+    }
+
     void serialize(std::ostream& os) const {
         serializeByteArray(os,this->len,this->data);
     }
@@ -319,6 +357,14 @@ class BTagShortArr : public BTagArr<T> {
 
     UINT8_T getTypeID() const {
         return DataTypeID::UINT16_ARR;
+    }
+
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T bytesize = getIntVarByteSize(this->len);
+        // Bytesize of data
+        bytesize += this->len*2;
+        return bytesize;
     }
 
     void serialize(std::ostream& os) const {
@@ -358,6 +404,14 @@ class BTagIntArr : public BTagArr<T> {
         return DataTypeID::UINT32_ARR;
     }
 
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T bytesize = getIntVarByteSize(this->len);
+        // Bytesize of data
+        bytesize += this->len*4;
+        return bytesize;
+    }
+
     void serialize(std::ostream& os) const {
         serializeIntArray(os,this->len,this->data);
     }
@@ -393,6 +447,14 @@ class BTagLongArr : public BTagArr<T> {
 
     UINT8_T getTypeID() const {
         return DataTypeID::UINT64_ARR;
+    }
+
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T bytesize = getIntVarByteSize(this->len);
+        // Bytesize of data
+        bytesize += this->len*8;
+        return bytesize;
     }
 
     void serialize(std::ostream& os) const {
@@ -432,6 +494,14 @@ class BTagFloatArr : public BTagArr<T> {
         return DataTypeID::FLOAT_ARR;
     }
 
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T bytesize = getIntVarByteSize(this->len);
+        // Bytesize of data
+        bytesize += this->len*4;
+        return bytesize;
+    }
+
     void serialize(std::ostream& os) const {
         serializeFloatArray(os,this->len,this->data);
     }
@@ -469,6 +539,14 @@ class BTagDoubleArr : public BTagArr<T> {
         return DataTypeID::DOUBLE_ARR;
     }
 
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T bytesize = getIntVarByteSize(this->len);
+        // Bytesize of data
+        bytesize += this->len*8;
+        return bytesize;
+    }
+
     void serialize(std::ostream& os) const {
         serializeDoubleArray(os,this->len,this->data);
     }
@@ -504,6 +582,18 @@ class BTagStringArr : public BTagArr<T> {
 
     UINT8_T getTypeID() const {
         return DataTypeID::STRING_ARR;
+    }
+
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T len = this->len;
+        SIZE_T bytesize = getIntVarByteSize(len);
+        // Bytesize of data
+        for (size_t i=0; i<len; ++i) {
+            // Bytesize of int var
+            bytesize += getStringByteSize(this->data[i]);
+        }
+        return bytesize;
     }
 
     void serialize(std::ostream& os) const {
@@ -1111,6 +1201,19 @@ public:
         } else {
             throw tag_not_found_error("BTC::serialize_::BTagCompound::getTypeID", key);
         }
+    }
+
+    SIZE_T getByteSize() const {
+        // Bytesize of int var
+        SIZE_T datalen = datalist.size();
+        SIZE_T bytesize = getIntVarByteSize(datalen);
+        // Bytesize of data
+        for (SIZE_T i=0; i<datalen; ++i) {
+            bytesize += 2;
+            bytesize += datalist[i].tag.size();
+            bytesize += datalist[i].data->getByteSize();
+        }
+        return bytesize;
     }
 
     // Serialization methods.

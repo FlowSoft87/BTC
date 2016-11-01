@@ -1,21 +1,24 @@
 #ifndef BTC_SERIALIZE_DATATYPE_H
 #define BTC_SERIALIZE_DATATYPE_H
 
+#include <stdint.h>
+#include <string>
+
 namespace BTC {
 namespace serialize_ {
 
-#ifndef ASSERT_C11
-typedef size_t SIZE_T;
-typedef unsigned char UINT8_T;
-typedef unsigned short int UINT16_T;
-typedef unsigned long int UINT32_T;
-typedef unsigned long long int UINT64_T;
-typedef float FLOAT_T;
-typedef double DOUBLE_T;
-typedef std::string STRING_T;
-#endif
+//#ifndef ASSERT_C11
+//typedef size_t SIZE_T;
+//typedef unsigned char UINT8_T;
+//typedef unsigned short int UINT16_T;
+//typedef unsigned long int UINT32_T;
+//typedef unsigned long long int UINT64_T;
+//typedef float FLOAT_T;
+//typedef double DOUBLE_T;
+//typedef std::string STRING_T;
+//#endif
 
-#ifdef ASSERT_C11
+//#ifdef ASSERT_C11
 typedef size_t SIZE_T;
 typedef uint8_t UINT8_T;
 typedef uint16_t UINT16_T;
@@ -24,7 +27,7 @@ typedef uint64_t UINT64_T;
 typedef float FLOAT_T;
 typedef double DOUBLE_T;
 typedef std::string STRING_T;
-#endif
+//#endif
 
 namespace DataTypeID {
 static const unsigned char COMPOUND = 0;
