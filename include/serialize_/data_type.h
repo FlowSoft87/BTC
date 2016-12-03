@@ -47,11 +47,11 @@ static const unsigned char FLOAT_ARR = 69;
 static const unsigned char DOUBLE_ARR = 70;
 }
 
-bool isValue(unsigned char type_id) {
+inline bool isValue(unsigned char type_id) {
     return((type_id > DataTypeID::COMPOUND) && (type_id < DataTypeID::STRING_ARR));
 }
 
-bool isArray(unsigned char type_id) {
+inline bool isArray(unsigned char type_id) {
     return(type_id >= DataTypeID::STRING_ARR);
 }
 

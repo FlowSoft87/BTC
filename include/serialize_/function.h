@@ -148,11 +148,11 @@ static const ByteOrder byte_order;
  * Serialize a single byte.
  * Requirement is that the number is castable to BTC::UINT8_T.
  */
-void serializeByte(std::ostream& o, UINT8_T b) {
+inline void serializeByte(std::ostream& o, UINT8_T b) {
     o.write(reinterpret_cast<const char*>(&b),1);
 }
 
-UINT8_T deserializeByte(std::istream& i) {
+inline UINT8_T deserializeByte(std::istream& i) {
     UINT8_T data = 0;
     i.read(reinterpret_cast<char*>(&data),1);
     return(data);
@@ -164,12 +164,12 @@ UINT8_T deserializeByte(std::istream& i) {
  * modulo operations defined.
  */
 //template<typename UINT16_T>
-void serializeShort(std::ostream& o, UINT16_T s) {
+inline void serializeShort(std::ostream& o, UINT16_T s) {
     byte_order.toLittleEndian(s);
     o.write(reinterpret_cast<const char*>(&s),2);
 }
 
-UINT16_T deserializeShort(std::istream& i) {
+inline UINT16_T deserializeShort(std::istream& i) {
     UINT16_T data;
     i.read(reinterpret_cast<char*>(&data),2);
     //data += (UINT16_T(deserializeByte(i)))*256u;
@@ -184,7 +184,7 @@ UINT16_T deserializeShort(std::istream& i) {
  * modulo operations defined.
  */
 //template<typename UINT32_T>
-void serializeInt(std::ostream& o, UINT32_T i) {
+inline void serializeInt(std::ostream& o, UINT32_T i) {
     byte_order.toLittleEndian(i);
     o.write(reinterpret_cast<const char*>(&i),4);
     //UINT16_T data = i/65536u;
@@ -193,7 +193,7 @@ void serializeInt(std::ostream& o, UINT32_T i) {
     //serializeShort(o,data);
 }
 
-UINT32_T deserializeInt(std::istream& i) {
+inline UINT32_T deserializeInt(std::istream& i) {
     UINT32_T data;
     i.read(reinterpret_cast<char*>(&data),4);
     byte_order.toHostEndian(data);
@@ -208,7 +208,7 @@ UINT32_T deserializeInt(std::istream& i) {
  * modulo operations defined.
  */
 //template<typename UINT64_T>
-void serializeLong(std::ostream& o, UINT64_T i) {
+inline void serializeLong(std::ostream& o, UINT64_T i) {
     byte_order.toLittleEndian(i);
     o.write(reinterpret_cast<const char*>(&i),8);
     //UINT32_T data = i/4294967296u;
@@ -217,7 +217,7 @@ void serializeLong(std::ostream& o, UINT64_T i) {
     //serializeInt(o,data);
 }
 
-UINT64_T deserializeLong(std::istream& i) {
+inline UINT64_T deserializeLong(std::istream& i) {
     UINT64_T data;
     i.read(reinterpret_cast<char*>(&data),8);
     byte_order.toHostEndian(data);
@@ -280,7 +280,7 @@ SIZE_T getIntVarByteSize(const T& val) {
  * 23 bits long.
  * It is then serialized as a uint32_t to get rid of byte order issues.
  */
-void serializeFloat(std::ostream& os, const FLOAT_T& val) {
+inline void serializeFloat(std::ostream& os, const FLOAT_T& val) {
     UINT32_T data = 0;
     int exp = 0;
     FLOAT_T mant = std::frexp(val,&exp);
@@ -314,7 +314,7 @@ void serializeFloat(std::ostream& os, const FLOAT_T& val) {
 /**
  * Deserialize a floating point number of size 4 byte.
  */
-FLOAT_T deserializeFloat(std::istream& is) {
+inline FLOAT_T deserializeFloat(std::istream& is) {
     UINT32_T data = deserializeInt(is);
     FLOAT_T val = 0.5f;
     // Get sign
@@ -366,7 +366,7 @@ FLOAT_T deserializeFloat(std::istream& is) {
  * The number is decomposed numerically and stored in a uint64_t variable in a special format.
  * It is then serialized as a uint64_t to get rid of byte order issues.
  */
-void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
+inline void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
     UINT64_T data = 0;
     int exp = 0;
     DOUBLE_T mant = std::frexp(val,&exp);  // Split double into mant and exp: val = mant*2^exp
@@ -400,7 +400,7 @@ void serializeDouble(std::ostream& os, const DOUBLE_T& val) {
 /**
  * Deserialize a floating point number of size 8 byte.
  */
-DOUBLE_T deserializeDouble(std::istream& is) {
+inline DOUBLE_T deserializeDouble(std::istream& is) {
     UINT64_T data = deserializeLong(is);
     DOUBLE_T val = 0.5;
     // Get sign
@@ -450,7 +450,7 @@ DOUBLE_T deserializeDouble(std::istream& is) {
  * Serialize a string where the length is limited to 2^8 chars.
  * The length is stored in front of the string.
  */
-void serializeString8(std::ostream& o, const STRING_T& s) {
+inline void serializeString8(std::ostream& o, const STRING_T& s) {
 #ifdef DEBUG
     if(s.size() > 256u) {
         std::cout << "Error (serialize_::SerializeHelper::serializeString8): Not a short string!" << std::endl;
@@ -463,7 +463,7 @@ void serializeString8(std::ostream& o, const STRING_T& s) {
     }
 }
 
-STRING_T deserializeString8(std::istream& i) {
+inline STRING_T deserializeString8(std::istream& i) {
     UINT8_T size = deserializeByte(i);
     if(size > 0) {
         STRING_T result(size,'a');
@@ -478,7 +478,7 @@ STRING_T deserializeString8(std::istream& i) {
  * Serialize a string where the length is limited to 2^16 chars.
  * The length is stored in front of the size.
  */
-void serializeString16(std::ostream& o, const STRING_T& s) {
+inline void serializeString16(std::ostream& o, const STRING_T& s) {
 #ifdef DEBUG
     if(s.size() > 65536u) {
         std::cout << "Error (serialize_::SerializeHelper::serializeString16): Not a short string!" << std::endl;
@@ -491,7 +491,7 @@ void serializeString16(std::ostream& o, const STRING_T& s) {
     }
 }
 
-STRING_T deserializeString16(std::istream& i) {
+inline STRING_T deserializeString16(std::istream& i) {
     UINT16_T size = deserializeShort(i);
     if(size > 0) {
         STRING_T result(size,'a');
@@ -507,7 +507,7 @@ STRING_T deserializeString16(std::istream& i) {
  * Serialize a string where the length is limited to 2^32 chars.
  * The length is stored in front of the size.
  */
-void serializeString32(std::ostream& o, const STRING_T& s) {
+inline void serializeString32(std::ostream& o, const STRING_T& s) {
 #ifdef DEBUG
     if(s.size() > 4294967296ul) {
         std::cout << "Error (serialize_::SerializeHelper::serializeString32): Not a short string!" << std::endl;
@@ -520,7 +520,7 @@ void serializeString32(std::ostream& o, const STRING_T& s) {
     }
 }
 
-STRING_T deserializeString32(std::istream& i) {
+inline STRING_T deserializeString32(std::istream& i) {
     UINT32_T size = deserializeInt(i);
     if(size > 0)
     {
@@ -537,14 +537,14 @@ STRING_T deserializeString32(std::istream& i) {
  * Serialize a string where the length is limited to 2^64 chars.
  * The length is stored in front of the size.
  */
-void serializeString64(std::ostream& o, const STRING_T& s) {
+inline void serializeString64(std::ostream& o, const STRING_T& s) {
     serializeLong(o,s.size());
     if(s.size() > 0) {
         o.write(s.data(),s.size());
     }
 }
 
-STRING_T deserializeString64(std::istream& i) {
+inline STRING_T deserializeString64(std::istream& i) {
     UINT64_T size = deserializeLong(i);
     if(size > 0) {
         STRING_T result(size,'a');
@@ -560,14 +560,14 @@ STRING_T deserializeString64(std::istream& i) {
  * Serialize a string where the length is limited to maximall 2^64 chars.
  * The size of the number representing the length is variable.
  */
-void serializeString(std::ostream& o, const STRING_T& s) {
+inline void serializeString(std::ostream& o, const STRING_T& s) {
     serializeIntVar(o,s.size());
     if(s.size() > 0) {
         o.write(s.data(),s.size());
     }
 }
 
-STRING_T deserializeString(std::istream& i) {
+inline STRING_T deserializeString(std::istream& i) {
     SIZE_T size = deserializeIntVar<SIZE_T>(i);
     if(size > 0) {
         STRING_T result(size,'a');
@@ -581,7 +581,7 @@ STRING_T deserializeString(std::istream& i) {
 /**
  * Get bytesize of a string with unspecified size.
  */
-SIZE_T getStringByteSize(const STRING_T& s) {
+inline SIZE_T getStringByteSize(const STRING_T& s) {
     SIZE_T bytesize = s.size();
     bytesize += getIntVarByteSize(bytesize);
     return bytesize;
@@ -659,14 +659,14 @@ T* deserializeLongArray(std::istream& is, SIZE_T& len) {
     return(data);
 }
 
-void serializeFloatArray(std::ostream& o, const SIZE_T& len, const FLOAT_T* data) {
+inline void serializeFloatArray(std::ostream& o, const SIZE_T& len, const FLOAT_T* data) {
     serializeIntVar(o,len);
     for(SIZE_T i=0; i<len; ++i) {
         serializeFloat(o,data[i]);
     }
 }
 
-FLOAT_T* deserializeFloatArray(std::istream& is, SIZE_T& len) {
+inline FLOAT_T* deserializeFloatArray(std::istream& is, SIZE_T& len) {
     len = deserializeIntVar<SIZE_T>(is);
     FLOAT_T* data = new FLOAT_T[len];
     for(SIZE_T i=0; i<len; ++i) {
@@ -675,14 +675,14 @@ FLOAT_T* deserializeFloatArray(std::istream& is, SIZE_T& len) {
     return(data);
 }
 
-void serializeDoubleArray(std::ostream& o, const SIZE_T& len, const DOUBLE_T* data) {
+inline void serializeDoubleArray(std::ostream& o, const SIZE_T& len, const DOUBLE_T* data) {
     serializeIntVar(o,len);
     for(SIZE_T i=0; i<len; ++i) {
         serializeDouble(o,data[i]);
     }
 }
 
-DOUBLE_T* deserializeDoubleArray(std::istream& is, SIZE_T& len) {
+inline DOUBLE_T* deserializeDoubleArray(std::istream& is, SIZE_T& len) {
     len = deserializeIntVar<SIZE_T>(is);
     DOUBLE_T* data = new DOUBLE_T[len];
     for(SIZE_T i=0; i<len; ++i) {
@@ -691,14 +691,14 @@ DOUBLE_T* deserializeDoubleArray(std::istream& is, SIZE_T& len) {
     return(data);
 }
 
-void serializeStringArray(std::ostream& o, const SIZE_T& len, const STRING_T* data) {
+inline void serializeStringArray(std::ostream& o, const SIZE_T& len, const STRING_T* data) {
     serializeIntVar(o,len);
     for(SIZE_T i=0; i<len; ++i) {
         serializeString(o,data[i]);
     }
 }
 
-STRING_T* deserializeStringArray(std::istream& is, SIZE_T& len) {
+inline STRING_T* deserializeStringArray(std::istream& is, SIZE_T& len) {
     len = deserializeIntVar<SIZE_T>(is);
     STRING_T* data = new STRING_T[len];
     for(SIZE_T i=0; i<len; ++i) {

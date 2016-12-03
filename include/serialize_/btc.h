@@ -71,7 +71,7 @@ class BTagByte : public BTagVal<T> {
     }
 
     std::ostream& print(std::ostream& os, unsigned char increment) const {
-        os << "b{" << this->data << '}';
+        os << "b{" << int(this->data) << '}';
         return os;
     }
 };
